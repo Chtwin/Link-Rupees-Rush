@@ -85,8 +85,18 @@ Fonction qui lance le jeu:
 */
 int play (SDL_Surface* screen)
 {
-    int i = 0;
+    int i = 0, continuer = 1, j = 0, time = 0, lastTime = 0, stime = 0, mtime = 0, points = 0;
     Mix_AllocateChannels(4);
+    char temps[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    char score[6] = {0,0,0,0,0,0};
+    int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR];
+    for (i=0;i<NB_BLOCS_LARGEUR;i++)
+    {
+        for (j=0;j<NB_BLOCS_HAUTEUR;j++)
+        {
+            maps[i][j]= VIDE;
+        }
+    }
     for (i=0;i<4;i++)
     {
         Mix_Volume(i,VOLUME);
@@ -95,15 +105,10 @@ int play (SDL_Surface* screen)
     TTF_Font *police = NULL, *police2 = NULL;
     Mix_Music *gerudo;
     Mix_Chunk *s_ruppes, *s_sword, *s_degat;
-    Mix_AllocateChannels(4);
     SDL_Rect position, positionPlayer, positionGanon, positionBackground;
     SDL_Event event;
     positionBackground.x=0;
     positionBackground.y=0;
-    int continuer = 1, j = 0, time = 0, lastTime = 0, stime = 0, mtime = 0, points = 0;
-    char temps[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-    char score[6] = {0,0,0,0,0,0};
-    int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR] = {0};
     background = IMG_Load("arene_beta_13.bmp");
     setup_pictures(link, rupees,ganon, zelda, guard, skull,daruina,granma,koume,maple,oldman,nayru,saria,sheik,ruto,rauru);
     setup_map(maps);
@@ -132,29 +137,26 @@ int play (SDL_Surface* screen)
         case SDL_QUIT:
             continuer = 0;
             break;
-        case SDL_KEYDOWN:
-            switch(event.key.keysym.sym)
+        default:
+            switch(test_ia(maps))
             {
-                case SDLK_ESCAPE:
-                    continuer = 0;
-                    break;
-                case SDLK_UP:
+                case HAUT:
                     linkNow = link[UP];
                     points += movePlayer(maps, &positionPlayer, UP, s_ruppes);
                     break;
-                case SDLK_DOWN:
+                case BAS:
                     linkNow = link[DOWN];
                     points += movePlayer(maps, &positionPlayer, DOWN, s_ruppes);
                     break;
-                case SDLK_RIGHT:
+                case DROITE:
                     linkNow = link[RIGHT];
                     points += movePlayer(maps, &positionPlayer, RIGHT, s_ruppes);
                     break;
-                case SDLK_LEFT:
+                case GAUCHE:
                     linkNow = link[LEFT];
                     points += movePlayer(maps, &positionPlayer, LEFT, s_ruppes);
                     break;
-              //  case SDLK_SPACE:
+              //  case EPEE:
                 //    linkNow = link[HIT];
                   //  Mix_PlayChannel(1, s_sword, 0);
                     //break;
@@ -189,11 +191,11 @@ int play (SDL_Surface* screen)
     position.y = positionPlayer.y * TAILLE_BLOC;
     SDL_BlitSurface(background, NULL, screen, &positionBackground);
     SDL_BlitSurface(linkNow, NULL, screen, &position);
-    if (time%1==0)
+    if (SDL_GetTicks()>16000)
     {
         points -= ganon_move(maps, &positionGanon, &positionPlayer, s_degat ,points);
-        animation(screen, zelda, skull,daruina,granma,koume,maple,oldman,nayru,saria,sheik,ruto,rauru);
     }
+    animation(screen, zelda, skull,daruina,granma,koume,maple,oldman,nayru,saria,sheik,ruto,rauru);
     for (i = MINX ; i < MAXX ; i++)
     {
         for (j = MINY ; j < MAXY ; j++)
@@ -346,7 +348,7 @@ void setup_pictures (SDL_Surface *link[6],SDL_Surface *rupees[3],SDL_Surface *ga
     SDL_SetColorKey(skull [RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*skull)->format, 0, 0, 255));
     skull[LEFT] = IMG_Load("skull_left.bmp");
     SDL_SetColorKey(skull[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*skull)->format, 0, 0, 255));
-    
+
                     /* IMAGE DARUINA */
     daruina[UP]=IMG_Load("daruina1.bmp");
     SDL_SetColorKey(daruina[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*daruina)->format,0,0,255));
@@ -454,11 +456,11 @@ Fonction qui initialise la carte avec les rubis et les cases vides.
 void setup_map (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR])
 {
     int i,j, nb = 0;
-    for (i = MINX - CASE; i < MAXX ; i++)
+    for (i = MINX; i < MAXX ; i++)
     {
-        for (j = MINY - CASE ; j < MAXY ; j++)
+        for (j = MINY; j < MAXY ; j++)
         {
-            nb = rand()%500;
+            nb = rand()%600;
             switch (nb)
             {
                 case 5:
