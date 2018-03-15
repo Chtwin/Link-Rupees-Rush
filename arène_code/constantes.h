@@ -18,8 +18,8 @@
 #define ECART 33
 
 enum {UP, DOWN, LEFT, RIGHT,ANIM_UP1,ANIM_UP2,ANIM_UP3,ANIM_DOWN1,ANIM_DOWN2,ANIM_DOWN3,ANIM_LEFT1,ANIM_LEFT2,ANIM_LEFT3,ANIM_RIGHT1,ANIM_RIGHT2,ANIM_RIGHT3};
-enum{GREEN_RUPEE,BLUE_RUPEE,RED_RUPEE,VIDE};
-enum {VIDES, MUR,JOUEUR};
+enum {HAUT, BAS, GAUCHE, DROITE, EPEE, PARER,ITEM};
+enum{GREEN_RUPEE,BLUE_RUPEE,RED_RUPEE,VIDE,MUR,IA};
 int play (SDL_Surface* screen);
 int movePlayer (int maps[][NB_BLOCS_HAUTEUR], SDL_Rect *position, int direction, Mix_Chunk *s_ruppes);
 void SDL_Delay(Uint32 ms);
@@ -33,5 +33,14 @@ void timer (char temps[],char score[],int time,int lastTime,int stime,int mtime,
 int win (int points, SDL_Surface* screen, Mix_Music *gerudo);
 void animation(SDL_Surface* screen, SDL_Surface *zelda[6], SDL_Surface *skull[4],SDL_Surface *daruina[4],SDL_Surface *granma[4],SDL_Surface *koume[4],SDL_Surface *maple [4],SDL_Surface *oldman[4],SDL_Surface *nayru[4],SDL_Surface *saria[4],SDL_Surface *sheik[4], SDL_Surface *ruto[4], SDL_Surface *rauru[4]);
 void garde(SDL_Surface* screen, SDL_Surface *guard[16]);
+int test_ia(int maps[][NB_BLOCS_HAUTEUR]);
+
+/*
+Fonction qui renvoie un entier pour faire bouger l'IA
+*/
+int test_ia(int maps[][NB_BLOCS_HAUTEUR])
+{
+    return rand()%4;
+}
 
 #endif
