@@ -454,9 +454,9 @@ Fonction qui initialise la carte avec les rubis et les cases vides.
 void setup_map (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR])
 {
     int i,j, nb = 0;
-    for (i = MINX ; i < MAXX ; i++)
+    for (i = MINX - CASE; i < MAXX ; i++)
     {
-        for (j = MINY ; j < MAXY ; j++)
+        for (j = MINY - CASE ; j < MAXY ; j++)
         {
             nb = rand()%500;
             switch (nb)
