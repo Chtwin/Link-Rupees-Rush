@@ -80,7 +80,9 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-
+/*
+Fonction qui lance le jeu:
+*/
 int play (SDL_Surface* screen)
 {
     int i = 0;
@@ -244,6 +246,9 @@ int play (SDL_Surface* screen)
     return 0;
 }
 
+/*
+Fonction qui permet de charger toutes les images du dossier.
+*/
 void setup_pictures (SDL_Surface *link[6],SDL_Surface *rupees[3],SDL_Surface *ganon[5], SDL_Surface *zelda[6], SDL_Surface *guard[16], SDL_Surface *skull[4],SDL_Surface *daruina[4],SDL_Surface *granma[4],SDL_Surface *koume[4],SDL_Surface *maple [4],SDL_Surface *oldman[4],SDL_Surface *nayru[4],SDL_Surface *saria[4],SDL_Surface *sheik[4], SDL_Surface *ruto[4], SDL_Surface *rauru[4])
 {
     link[UP] = IMG_Load("link_up.bmp");
@@ -331,7 +336,6 @@ void setup_pictures (SDL_Surface *link[6],SDL_Surface *rupees[3],SDL_Surface *ga
     SDL_SetColorKey(skull [RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*skull)->format, 0, 0, 255));
     skull[LEFT] = IMG_Load("skull_left.bmp");
     SDL_SetColorKey(skull[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*skull)->format, 0, 0, 255));
-    ///
 
                     /* IMAGE SKULL */
     skull[UP] = IMG_Load("skull_up.bmp");
@@ -342,8 +346,7 @@ void setup_pictures (SDL_Surface *link[6],SDL_Surface *rupees[3],SDL_Surface *ga
     SDL_SetColorKey(skull [RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*skull)->format, 0, 0, 255));
     skull[LEFT] = IMG_Load("skull_left.bmp");
     SDL_SetColorKey(skull[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*skull)->format, 0, 0, 255));
-
-
+    
                     /* IMAGE DARUINA */
     daruina[UP]=IMG_Load("daruina1.bmp");
     SDL_SetColorKey(daruina[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*daruina)->format,0,0,255));
@@ -353,7 +356,6 @@ void setup_pictures (SDL_Surface *link[6],SDL_Surface *rupees[3],SDL_Surface *ga
     SDL_SetColorKey(daruina[RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*daruina)->format,0,0,255));
     daruina[LEFT]=IMG_Load("daruina4.bmp");
     SDL_SetColorKey(daruina[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*daruina)->format,0,0,255));
-
 
                     /* IMAGE GRANMA */
     granma[UP] = IMG_Load("granma_up.bmp");
@@ -365,7 +367,6 @@ void setup_pictures (SDL_Surface *link[6],SDL_Surface *rupees[3],SDL_Surface *ga
     granma[LEFT] = IMG_Load("granma_left.bmp");
     SDL_SetColorKey(granma[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*granma)->format, 0, 0, 255));
 
-
                     /* IMAGE KOUME */
     koume[UP] = IMG_Load("koume_up.bmp");
     SDL_SetColorKey(koume[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*koume)->format, 0, 0, 255));
@@ -376,8 +377,6 @@ void setup_pictures (SDL_Surface *link[6],SDL_Surface *rupees[3],SDL_Surface *ga
     koume[LEFT] = IMG_Load("koume_left.bmp");
     SDL_SetColorKey(koume[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*koume)->format, 0, 0, 255));
 
-
-
                     /* IMAGE MAPLE */
     maple[UP] = IMG_Load("maple_up.bmp");
     SDL_SetColorKey(maple[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*maple)->format, 0, 0, 255));
@@ -387,7 +386,6 @@ void setup_pictures (SDL_Surface *link[6],SDL_Surface *rupees[3],SDL_Surface *ga
     SDL_SetColorKey(maple[RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*maple)->format, 0, 0, 255));
     maple[LEFT] = IMG_Load("maple_left.bmp");
     SDL_SetColorKey(maple [LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*maple)->format, 0, 0, 255));
-
 
                         /* IMAGE OLDMAN */
     oldman[UP] = IMG_Load("oldman_up.bmp");
@@ -429,7 +427,6 @@ void setup_pictures (SDL_Surface *link[6],SDL_Surface *rupees[3],SDL_Surface *ga
     sheik[LEFT] = IMG_Load("sheik_left.bmp");
     SDL_SetColorKey(sheik[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*sheik)->format, 0, 0, 255));
 
-
                         /* IMAGE RUTO */
     ruto[UP] = IMG_Load("ruto_up.bmp");
     SDL_SetColorKey(ruto[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*ruto)->format, 0, 0, 255));
@@ -440,7 +437,6 @@ void setup_pictures (SDL_Surface *link[6],SDL_Surface *rupees[3],SDL_Surface *ga
     ruto[LEFT] = IMG_Load("ruto_left.bmp");
     SDL_SetColorKey(ruto[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*ruto)->format, 0, 0, 255));
 
-
                         /* IMAGE RAURU */
     rauru[UP]=IMG_Load("rauru_anim1.bmp");
     SDL_SetColorKey(rauru[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*rauru)->format,0,0,255));
@@ -450,9 +446,11 @@ void setup_pictures (SDL_Surface *link[6],SDL_Surface *rupees[3],SDL_Surface *ga
     SDL_SetColorKey(rauru[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*rauru)->format,0,0,255));
     rauru[RIGHT]=IMG_Load("rauru_anim4.bmp");
     SDL_SetColorKey(rauru[RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*rauru)->format,0,0,255));
-
 }
 
+/*
+Fonction qui initialise la carte avec les rubis et les cases vides.
+*/
 void setup_map (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR])
 {
     int i,j, nb = 0;
@@ -480,6 +478,9 @@ void setup_map (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR])
     }
 }
 
+/*
+Fonction qui permet de gérer le chronométre du jeu.
+*/
 void timer (char temps[20],char score[6],int time,int lastTime,int stime,int mtime,int points)
 {
     if (stime < 10)
@@ -504,6 +505,10 @@ void timer (char temps[20],char score[6],int time,int lastTime,int stime,int mti
     }
 }
 
+
+/*
+Fonction qui permet aux IAs de se déplacer.
+*/
 int movePlayer (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *position, int direction, Mix_Chunk *s_ruppes)
 {
     int i, bonus = 0;
@@ -574,6 +579,10 @@ int movePlayer (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *position
     return bonus;
 }
 
+
+/*
+Fonction qui permet à Ganon de se déplacer.
+*/
 int ganon_move(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *positionGanon, SDL_Rect *positionPlayer, Mix_Chunk *s_degat, int malus)
 {
     int x = positionPlayer->x * TAILLE_BLOC;
@@ -636,6 +645,10 @@ int ganon_move(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *positionG
     return 0;
 }
 
+
+/*
+Fonction qui détérmine quand il y a un vainqeur.
+*/
 int win(int points, SDL_Surface* screen, Mix_Music *gerudo)
 {
     if (points > 99)
@@ -722,6 +735,9 @@ int win(int points, SDL_Surface* screen, Mix_Music *gerudo)
     return 1;
 }
 
+/*
+Fonction qui gère les déplacements des pnjs. (pas du tout optimisé)
+*/
 void animation(SDL_Surface* screen, SDL_Surface *zelda[6], SDL_Surface *skull[4],SDL_Surface *daruina[4],SDL_Surface *granma[4],SDL_Surface *koume[4],SDL_Surface *maple [4],SDL_Surface *oldman[4],SDL_Surface *nayru[4],SDL_Surface *saria[4],SDL_Surface *sheik[4], SDL_Surface *ruto[4], SDL_Surface *rauru[4])
 {
     static int tour = 0;
@@ -793,6 +809,9 @@ void animation(SDL_Surface* screen, SDL_Surface *zelda[6], SDL_Surface *skull[4]
 }
 
 
+/*
+Fonction qui permet aux pnjs gardes de patrouiller autour de l'arène.
+*/
 void garde(SDL_Surface* screen, SDL_Surface *guard[16])
 {
     static int tour = ANIM_DOWN1;
