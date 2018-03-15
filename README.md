@@ -41,7 +41,8 @@ Les règles restent fondamentalement les mêmes mise à part celles-ci:<br/>
 En terme d'informations, les IAs connaitront les positions de tous les items et IAs.<br/>
 Les actions possibles citées ci-dessus sont: se déplacer, frapper, parer, utiliser un item.<br/>
 Vous aurez d'avantage d'informations très prochainement.<br/>
-Nous travaillons actuellment sur la suppression des contrôles aux clavier pour basculer sur un contrôle avec une fonction. De plus, une IA d'exemple sera bientôt disponible.<br/>
+Vous pouvez désormais déplacer l'IA à l'aide de la fonction **test_ia** contenu dans le header. Vous disposez d'un tableau contenant **uniquement** la position des rubis.<br/>
+Nous travaillons sur l'ajout de la position de Ganon ainsi que de la position de l'ia dans le tableau.<br/>
 
 # Contact & Problèmes
 
