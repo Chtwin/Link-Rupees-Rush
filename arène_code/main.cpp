@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
     SDL_WM_SetCaption("The Legend Of Zelda: Battle Royale", NULL);
-    menu = SDL_LoadBMP("score.bmp");
+    menu = SDL_LoadBMP("accueil.bmp");
     positionMenu.x=0;
     positionMenu.y=0;
     SDL_BlitSurface(menu, NULL, screen, &positionMenu);
