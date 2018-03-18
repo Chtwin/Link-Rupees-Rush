@@ -30,7 +30,7 @@ int ganon_move(int maps[][NB_BLOCS_HAUTEUR], SDL_Rect *positionGanon, SDL_Rect *
 void setup_pictures (SDL_Surface *link[6],SDL_Surface *rupees[3],SDL_Surface *ganon[5], SDL_Surface *zelda[6], SDL_Surface *guard[16], SDL_Surface *skull[4],SDL_Surface *daruina[4],SDL_Surface *granma[4],SDL_Surface *koume[4],SDL_Surface *maple [4],SDL_Surface *oldman[4],SDL_Surface *nayru[4],SDL_Surface *saria[4],SDL_Surface *sheik[4], SDL_Surface *ruto[4], SDL_Surface *rauru[4]);
 void setup_map (int maps[][NB_BLOCS_HAUTEUR]);
 void timer (char temps[],char score[],int time,int lastTime,int stime,int mtime,int points);
-int win (int points, SDL_Surface* screen, Mix_Music *gerudo);
+int win (int points, SDL_Surface* screen, Mix_Music *gerudo, int continuer);
 void animation(SDL_Surface* screen, SDL_Surface *zelda[6], SDL_Surface *skull[4],SDL_Surface *daruina[4],SDL_Surface *granma[4],SDL_Surface *koume[4],SDL_Surface *maple [4],SDL_Surface *oldman[4],SDL_Surface *nayru[4],SDL_Surface *saria[4],SDL_Surface *sheik[4], SDL_Surface *ruto[4], SDL_Surface *rauru[4]);
 void garde(SDL_Surface* screen, SDL_Surface *guard[16]);
 int test_ia(int maps[][NB_BLOCS_HAUTEUR]);
