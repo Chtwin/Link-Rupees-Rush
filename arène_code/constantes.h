@@ -16,6 +16,19 @@
 #define BLUE_BONUS  5
 #define RED_BONUS   20
 #define ECART 33
+/*
+    Ajout de la structure propre à chaque IA
+*/
+typedef struct Player Player;
+struct Player
+{
+    int x;        
+    int y;
+    int points;        
+    int item;     
+    int orientation;    // Direction dans laquelle regarde l'IA.
+    int anim;           // Boucle qui servira pour les animations.
+};
 
 enum {UP, DOWN, LEFT, RIGHT,ANIM_UP1,ANIM_UP2,ANIM_UP3,ANIM_DOWN1,ANIM_DOWN2,ANIM_DOWN3,ANIM_LEFT1,ANIM_LEFT2,ANIM_LEFT3,ANIM_RIGHT1,ANIM_RIGHT2,ANIM_RIGHT3};
 enum {HAUT, BAS, GAUCHE, DROITE, EPEE, PARER,ITEM};
