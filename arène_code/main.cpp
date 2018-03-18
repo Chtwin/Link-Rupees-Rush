@@ -131,105 +131,127 @@ int play (SDL_Surface* screen)
     s_degat = Mix_LoadWAV("degat.wav");
     Mix_VolumeMusic(VOLUME);
     Mix_PlayMusic(gerudo, -1);
-    ///SDL_EnableKeyRepeat(20000, 20000);
+    SDL_BlitSurface(background, NULL, screen, &positionBackground);
+    Player links[26];
+    for (i=0;i<26;i++)
+    {
+        links[i].points = 20;
+        links[i].x = 30+i;
+        links[i].y = 35+i;
+        positionPlayer.x = links[i].x * TAILLE_BLOC;
+        positionPlayer.y = links[i].y * TAILLE_BLOC;
+        SDL_BlitSurface(linkNow, NULL, screen, &positionPlayer);
+        maps[links[i].x][links[i].y] = links[i].points;
+    }
     while (continuer)
     {
-    SDL_PollEvent(&event);  ///SDL_WaitEvent
-    switch(event.type)
-    {
-        case SDL_QUIT:
-            continuer = 0;
-            break;
-        case SDL_KEYDOWN:
-            if(event.key.keysym.sym == SDLK_ESCAPE)
+        SDL_BlitSurface(background, NULL, screen, &positionBackground);
+        for (i=0;i<26;i++)
+        {
+            positionPlayer.x =links[i].x;
+            positionPlayer.y =links[i].y;
+            SDL_PollEvent(&event);  ///SDL_WaitEvent
+            switch(event.type)
             {
-                continuer = 0;
+                case SDL_QUIT:
+                    continuer = 0;
+                    break;
+                case SDL_KEYDOWN:
+                    if(event.key.keysym.sym == SDLK_ESCAPE)
+                    {
+                        continuer = 0;
+                    }
+                    break;
+                default:
+                    switch(test_ia(maps, links))
+                    {
+                        case HAUT:
+                            linkNow = link[UP];
+                            links[i].orientation = UP;
+                            links[i].points += movePlayer(maps, &positionPlayer, UP, s_ruppes);
+                            break;
+                        case BAS:
+                            linkNow = link[DOWN];
+                            links[i].orientation = DOWN;
+                            links[i].points += movePlayer(maps, &positionPlayer, DOWN, s_ruppes);
+                            break;
+                        case DROITE:
+                            linkNow = link[RIGHT];
+                            links[i].orientation = RIGHT;
+                            links[i].points += movePlayer(maps, &positionPlayer, RIGHT, s_ruppes);
+                            break;
+                        case GAUCHE:
+                            linkNow = link[LEFT];
+                            links[i].orientation = LEFT;
+                            links[i].points += movePlayer(maps, &positionPlayer, LEFT, s_ruppes);
+                            break;
+                         //case EPEE:
+                            //linkNow = link[HIT];
+                            //Mix_PlayChannel(1, s_sword, 0);
+                            //break;
+                    }
+                    break;
             }
-            break;
-        default:
-            switch(test_ia(maps))
-            {
-                case HAUT:
-                    linkNow = link[UP];
-                    points += movePlayer(maps, &positionPlayer, UP, s_ruppes);
-                    break;
-                case BAS:
-                    linkNow = link[DOWN];
-                    points += movePlayer(maps, &positionPlayer, DOWN, s_ruppes);
-                    break;
-                case DROITE:
-                    linkNow = link[RIGHT];
-                    points += movePlayer(maps, &positionPlayer, RIGHT, s_ruppes);
-                    break;
-                case GAUCHE:
-                    linkNow = link[LEFT];
-                    points += movePlayer(maps, &positionPlayer, LEFT, s_ruppes);
-                    break;
-              //  case EPEE:
-                //    linkNow = link[HIT];
-                  //  Mix_PlayChannel(1, s_sword, 0);
-                    //break;
-            }
-            break;
-    }
-    time = SDL_GetTicks();
-    if (time - lastTime >= 1000)
-    {
-        stime++;
+            links[i].x = positionPlayer.x;
+            links[i].y = positionPlayer.y;
+            positionPlayer.x*= TAILLE_BLOC;
+            positionPlayer.y*= TAILLE_BLOC;
+            maps[links[i].x][links[i].y] = IA;
+            SDL_BlitSurface(linkNow, NULL, screen, &positionPlayer);
+        }
+        time = SDL_GetTicks();
+        if (time - lastTime >= 1000)
+        {
+            stime++;
         if (stime == 60)
         {
             mtime++;
             stime = 0;
         }
         lastTime = time;
-    }
-    timer(temps,score,time,lastTime,stime,mtime,points);
-    p_points = TTF_RenderText_Blended(police2, score, couleurJaune);
-    texte = TTF_RenderText_Blended(police, temps, couleurNoire);
-    position.x = positionPlayer.x * TAILLE_BLOC;
-    position.y = positionPlayer.y * TAILLE_BLOC;
-    SDL_BlitSurface(background, NULL, screen, &positionBackground);
-    SDL_BlitSurface(scoreboard, NULL, screen, &positionScoreboard);
-    SDL_BlitSurface(linkNow, NULL, screen, &position);
-    if (SDL_GetTicks()>10000)
-    {
-        points -= ganon_move(maps, &positionGanon, &positionPlayer, s_degat ,points);
-    }
-    animation(screen, zelda, skull,daruina,granma,koume,maple,oldman,nayru,saria,sheik,ruto,rauru);
-    for (i = MINX ; i < MAXX ; i++)
-    {
-        for (j = MINY ; j < MAXY ; j++)
+        }
+        timer(temps,score,time,lastTime,stime,mtime,points);
+        p_points = TTF_RenderText_Blended(police2, score, couleurJaune);
+        texte = TTF_RenderText_Blended(police, temps, couleurNoire);
+        position.x = positionPlayer.x * TAILLE_BLOC;
+        position.y = positionPlayer.y * TAILLE_BLOC;
+        SDL_BlitSurface(scoreboard, NULL, screen, &positionScoreboard);
+        ///points -= ganon_move(maps, &positionGanon, &positionPlayer, s_degat ,points);  Désactivation provisoire de ganon pour une fonte total de cette IA
+        animation(screen, zelda, skull,daruina,granma,koume,maple,oldman,nayru,saria,sheik,ruto,rauru);
+        for (i = MINX ; i < MAXX ; i++)
         {
-            position.x = i*TAILLE_BLOC + 10;
-            position.y = j*TAILLE_BLOC + 10;
-            switch(maps[i][j])
+            for (j = MINY ; j < MAXY ; j++)
             {
-                case GREEN_RUPEE:
-                    SDL_BlitSurface(rupees[GREEN_RUPEE], NULL, screen, &position);
-                    break;
-                case BLUE_RUPEE:
-                    SDL_BlitSurface(rupees[BLUE_RUPEE], NULL, screen, &position);
-                    break;
-                case RED_RUPEE:
-                    SDL_BlitSurface(rupees[RED_RUPEE], NULL, screen, &position);
+                position.x = i*TAILLE_BLOC + 10;
+                position.y = j*TAILLE_BLOC + 10;
+                switch(maps[i][j])
+                {
+                    case GREEN_RUPEE:
+                        SDL_BlitSurface(rupees[GREEN_RUPEE], NULL, screen, &position);
+                        break;
+                    case BLUE_RUPEE:
+                        SDL_BlitSurface(rupees[BLUE_RUPEE], NULL, screen, &position);
+                        break;
+                    case RED_RUPEE:
+                        SDL_BlitSurface(rupees[RED_RUPEE], NULL, screen, &position);
+                }
             }
         }
-    }
-    position.x = 1000;
-    position.y = 25;
-    SDL_BlitSurface(rupees[GREEN_RUPEE], NULL, screen, &position);
-    position.x = 70;
-    position.y = 25; //30
-    SDL_BlitSurface(texte, NULL, screen, &position);
-    position.x = 1025;
-    position.y = 30;//78
-    SDL_BlitSurface(p_points, NULL, screen, &position);
-    position.x = positionGanon.x; //* TAILLE_BLOC;
-    position.y = positionGanon.y; //* TAILLE_BLOC;
-    SDL_BlitSurface(ganonNow, NULL, screen, &position);
-    garde(screen,guard);
-    SDL_Flip(screen);
-    continuer = win(points, screen, gerudo, continuer);
+        position.x = 1000;
+        position.y = 25;
+        SDL_BlitSurface(rupees[GREEN_RUPEE], NULL, screen, &position);
+        position.x = 70;
+        position.y = 25; //30
+        SDL_BlitSurface(texte, NULL, screen, &position);
+        position.x = 1025;
+        position.y = 30;//78
+        SDL_BlitSurface(p_points, NULL, screen, &position);
+        position.x = positionGanon.x; //* TAILLE_BLOC;
+        position.y = positionGanon.y; //* TAILLE_BLOC;
+        SDL_BlitSurface(ganonNow, NULL, screen, &position);
+        garde(screen,guard);
+        SDL_Flip(screen);
+        continuer = win(points, screen, gerudo, continuer);
     }
     SDL_EnableKeyRepeat(0, 0);
     SDL_FreeSurface(wall);
@@ -316,7 +338,7 @@ int movePlayer (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *position
     switch (direction)
     {
         case UP:
-            if (position->y - 1 < MINY)
+            if (position->y - 1 < MINY || position->y - 1 == IA)
                 break;
 
             position->y--;
@@ -324,7 +346,7 @@ int movePlayer (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *position
             break;
 
         case DOWN:
-            if (position->y + 1 >= MAXY)
+            if (position->y + 1 >= MAXY || position->y + 1 == IA)
                 break;
 
             position->y++;
@@ -332,7 +354,7 @@ int movePlayer (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *position
             break;
 
         case RIGHT:
-            if (position->x + 1 >= MAXX)
+            if (position->x + 1 >= MAXX || position->x + 1 == IA)
                 break;
 
             position->x++;
@@ -340,7 +362,7 @@ int movePlayer (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *position
             break;
 
         case LEFT:
-            if (position->x - 1 < MINX)
+            if (position->x - 1 < MINX || position->x - 1 == IA)
                 break;
 
             position->x--;
@@ -355,7 +377,7 @@ int movePlayer (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *position
 
     for (i = 0; i < 4; i++)
     {
-        if ((*aroundCase[i]) != VIDE)
+        if ((*aroundCase[i]) != VIDE &&(*aroundCase[i]) != IA)
         {
             currentCase = aroundCase[i];
             break;
