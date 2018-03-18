@@ -51,7 +51,7 @@ int test_ia(int maps[][NB_BLOCS_HAUTEUR]);
 /*
 Fonction qui renvoie un entier pour faire bouger l'IA
 */
-int test_ia(int maps[][NB_BLOCS_HAUTEUR])
+int test_ia(int maps[][NB_BLOCS_HAUTEUR], Player links[26])
 {
     return rand()%4;
 }
