@@ -40,9 +40,9 @@ Les règles restent fondamentalement les mêmes mise à part celles-ci:<br/>
 
 En terme d'informations, les IAs connaitront les positions de tous les items et IAs.<br/>
 Les actions possibles citées ci-dessus sont: se déplacer, frapper, parer, utiliser un item.<br/>
-Vous aurez d'avantage d'informations très prochainement.<br/>
-Vous pouvez désormais déplacer l'IA à l'aide de la fonction **test_ia** contenu dans le header. Vous disposez d'un tableau contenant **uniquement** la position des rubis.<br/>
-Nous travaillons sur l'ajout de la position de Ganon ainsi que de la position de l'ia dans le tableau.<br/>
+Vous aurez davantage d'informations très prochainement.<br/>
+Vous pouvez désormais déplacer l'IA à l'aide de la fonction **test_ia** contenu dans le header. Vous disposez d'un tableau contenant la position des rubis ainsi que celle des IAs. De plus, vous disposez des stats de toutes les IAs de l'arène. La beta du scoreboard vous indique le nombre de rubis de chaque IA à l'écran.<br/>
+Nous travaillons sur l'ajout du multi fonction pour les IAs, le tirage aléatoire et la nouvelle fonction Ganon.<br/>
 
 # Contact & Problèmes
 
