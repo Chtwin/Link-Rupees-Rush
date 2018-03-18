@@ -36,14 +36,14 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
     SDL_WM_SetIcon(SDL_LoadBMP("icone-zelda.bmp"), NULL);
-    screen = SDL_SetVideoMode(LARGEUR_FENETRE,HAUTEUR_FENETRE,COULEUR,SDL_HWSURFACE | SDL_DOUBLEBUF);
+    screen = SDL_SetVideoMode(1920,HAUTEUR_FENETRE,COULEUR,SDL_FULLSCREEN | SDL_DOUBLEBUF);
     if (screen == NULL)
     {
         //fprintf(stderr, "Impossible de charger video : %s\n", SDL_GetError());
         exit(EXIT_FAILURE);
     }
     SDL_WM_SetCaption("The Legend Of Zelda: Battle Royale", NULL);
-    menu = SDL_LoadBMP("accueil.bmp");
+    menu = SDL_LoadBMP("acchd.bmp");
     positionMenu.x=0;
     positionMenu.y=0;
     SDL_BlitSurface(menu, NULL, screen, &positionMenu);
@@ -101,15 +101,18 @@ int play (SDL_Surface* screen)
     {
         Mix_Volume(i,VOLUME);
     }
-    SDL_Surface *rauru[4] = {NULL},*ruto[4] = {NULL},*sheik[4] = {NULL},*saria[4] = {NULL},*nayru[4] = {NULL},*oldman[4] = {NULL},*maple[4] = {NULL},*koume[4] = {NULL},*granma[4] = {NULL},*daruina[4] = {NULL},*skull[4] = {NULL}, *guard[16] = {NULL}, *link[6] = {NULL}, *rupees[3] = {NULL}, *zelda[6] = {NULL}, *ganon[5] ={NULL},*vide = NULL, *wall = NULL, *linkNow = NULL, *background = NULL, *texte = NULL, *p_points = NULL, *ganonNow = NULL;
+    SDL_Surface *rauru[4] = {NULL},*ruto[4] = {NULL},*sheik[4] = {NULL},*saria[4] = {NULL},*nayru[4] = {NULL},*oldman[4] = {NULL},*maple[4] = {NULL},*koume[4] = {NULL},*granma[4] = {NULL},*daruina[4] = {NULL},*skull[4] = {NULL}, *guard[16] = {NULL}, *link[6] = {NULL}, *rupees[3] = {NULL}, *zelda[6] = {NULL}, *ganon[5] ={NULL},*vide = NULL, *wall = NULL, *linkNow = NULL, *background = NULL, *scoreboard, *texte = NULL, *p_points = NULL, *ganonNow = NULL;
     TTF_Font *police = NULL, *police2 = NULL;
     Mix_Music *gerudo;
     Mix_Chunk *s_ruppes, *s_sword, *s_degat;
-    SDL_Rect position, positionPlayer, positionGanon, positionBackground;
+    SDL_Rect position, positionPlayer, positionGanon, positionBackground, positionScoreboard;
     SDL_Event event;
     positionBackground.x=0;
     positionBackground.y=0;
+    positionScoreboard.x= 1280;
+    positionScoreboard.y= 0;
     background = IMG_Load("arene_beta_13.bmp");
+    scoreboard = IMG_Load("scoreboard.bmp");
     setup_pictures(link, rupees,ganon, zelda, guard, skull,daruina,granma,koume,maple,oldman,nayru,saria,sheik,ruto,rauru);
     setup_map(maps);
     ganonNow = ganon[UP];
@@ -137,6 +140,12 @@ int play (SDL_Surface* screen)
         case SDL_QUIT:
             continuer = 0;
             break;
+        case SDL_KEYDOWN:
+            if(event.key.keysym.sym == SDLK_ESCAPE)
+            {
+                continuer = 0;
+            }
+            break;
         default:
             switch(test_ia(maps))
             {
@@ -160,16 +169,6 @@ int play (SDL_Surface* screen)
                 //    linkNow = link[HIT];
                   //  Mix_PlayChannel(1, s_sword, 0);
                     //break;
-                case SDLK_TAB:
-                    if(Mix_PausedMusic() == 1)
-                    {
-                        Mix_ResumeMusic();
-                    }
-                    else
-                    {
-                        Mix_PauseMusic();
-                    }
-                    break;
             }
             break;
     }
@@ -190,8 +189,9 @@ int play (SDL_Surface* screen)
     position.x = positionPlayer.x * TAILLE_BLOC;
     position.y = positionPlayer.y * TAILLE_BLOC;
     SDL_BlitSurface(background, NULL, screen, &positionBackground);
+    SDL_BlitSurface(scoreboard, NULL, screen, &positionScoreboard);
     SDL_BlitSurface(linkNow, NULL, screen, &position);
-    if (SDL_GetTicks()>16000)
+    if (SDL_GetTicks()>10000)
     {
         points -= ganon_move(maps, &positionGanon, &positionPlayer, s_degat ,points);
     }
@@ -229,7 +229,7 @@ int play (SDL_Surface* screen)
     SDL_BlitSurface(ganonNow, NULL, screen, &position);
     garde(screen,guard);
     SDL_Flip(screen);
-    continuer = win(points, screen, gerudo);
+    continuer = win(points, screen, gerudo, continuer);
     }
     SDL_EnableKeyRepeat(0, 0);
     SDL_FreeSurface(wall);
@@ -246,208 +246,6 @@ int play (SDL_Surface* screen)
     TTF_Quit();
     Mix_PauseMusic();
     return 0;
-}
-
-/*
-Fonction qui permet de charger toutes les images du dossier.
-*/
-void setup_pictures (SDL_Surface *link[6],SDL_Surface *rupees[3],SDL_Surface *ganon[5], SDL_Surface *zelda[6], SDL_Surface *guard[16], SDL_Surface *skull[4],SDL_Surface *daruina[4],SDL_Surface *granma[4],SDL_Surface *koume[4],SDL_Surface *maple [4],SDL_Surface *oldman[4],SDL_Surface *nayru[4],SDL_Surface *saria[4],SDL_Surface *sheik[4], SDL_Surface *ruto[4], SDL_Surface *rauru[4])
-{
-    link[UP] = IMG_Load("link_up.bmp");
-    SDL_SetColorKey(link[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
-    link[DOWN] = IMG_Load("link_down.bmp");
-    SDL_SetColorKey(link[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
-    link[RIGHT] = IMG_Load("link_right.bmp");
-    SDL_SetColorKey(link[RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
-    link[LEFT] = IMG_Load("link_left.bmp");
-    SDL_SetColorKey(link[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
-//    link[HIT] = IMG_Load("link_hit.bmp");
-//   SDL_SetColorKey(link[HIT], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
-//    link[DOWN_ANIM] = IMG_Load("link_down_floor.bmp");
-//    SDL_SetColorKey(link[DOWN_ANIM], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
-    ///
-    rupees[GREEN_RUPEE] = IMG_Load("green_rupee.bmp");
-    SDL_SetColorKey(rupees[GREEN_RUPEE], SDL_SRCCOLORKEY, SDL_MapRGB((*rupees)->format, 0, 0, 255));
-    rupees[BLUE_RUPEE] = IMG_Load("blue_rupee.bmp");
-    SDL_SetColorKey(rupees[BLUE_RUPEE], SDL_SRCCOLORKEY, SDL_MapRGB((*rupees)->format, 0, 0, 255));
-    rupees[RED_RUPEE] = IMG_Load("red_rupee.bmp");
-    SDL_SetColorKey(rupees[RED_RUPEE], SDL_SRCCOLORKEY, SDL_MapRGB((*rupees)->format, 0, 0, 255));
-    ///
-    ganon[UP] = IMG_Load("ganon_V6.bmp");
-    SDL_SetColorKey(ganon[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*ganon)->format, 0, 0, 255));
-    ganon[DOWN] = IMG_Load("ganon_V6.bmp");
-    SDL_SetColorKey(ganon[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*ganon)->format, 0, 0, 255));
-    ganon[LEFT] = IMG_Load("ganon_V6.bmp");
-    SDL_SetColorKey(ganon[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*ganon)->format, 0, 0, 255));
-    ganon[RIGHT] = IMG_Load("ganon_V6.bmp");
-    SDL_SetColorKey(ganon[RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*ganon)->format, 0, 0, 255));
-    //ganon[FIGHT] = IMG_Load("ganon_V6.bmp");
-    //SDL_SetColorKey(ganon[], SDL_SRCCOLORKEY, SDL_MapRGB((*ganon)->format, 0, 0, 255));
-    ///
-    zelda[UP] = IMG_Load("zelda_for_gradin1.bmp");
-    SDL_SetColorKey(zelda[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*zelda)->format, 0, 0, 255));
-    zelda[DOWN] = IMG_Load("zelda_for_gradin2.bmp");
-    SDL_SetColorKey(zelda[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*zelda)->format, 0, 0, 255));
-    zelda[LEFT] = IMG_Load("zelda_for_gradin3.bmp");
-    SDL_SetColorKey(zelda[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*zelda)->format, 0, 0, 255));
-    zelda[RIGHT] = IMG_Load("zelda_for_gradin4.bmp");
-    SDL_SetColorKey(zelda[RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*zelda)->format, 0, 0, 255));
-    zelda[ANIM_UP1] = IMG_Load("zelda_for_gradin5.bmp");
-    SDL_SetColorKey(zelda[ANIM_UP1], SDL_SRCCOLORKEY, SDL_MapRGB((*zelda)->format, 0, 0, 255));
-    zelda[ANIM_UP2] = IMG_Load("zelda_for_gradin6.bmp");
-    SDL_SetColorKey(zelda[ANIM_UP2], SDL_SRCCOLORKEY, SDL_MapRGB((*zelda)->format, 0, 0, 255));
-    ///
-    guard[UP] = IMG_Load("guard_rotation1.bmp");
-    SDL_SetColorKey(guard[UP], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
-    guard[DOWN]=IMG_Load("guard_rotation2.bmp");
-    SDL_SetColorKey(guard[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
-    guard[RIGHT]=IMG_Load("guard_rotation4.bmp");
-    SDL_SetColorKey(guard[RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
-    guard[LEFT]=IMG_Load("guard_rotation3.bmp");
-    SDL_SetColorKey(guard[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
-    guard[ANIM_UP1]=IMG_Load("guard_up1.bmp");
-    SDL_SetColorKey(guard[ANIM_UP1], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
-    guard[ANIM_UP2]=IMG_Load("guard_up2.bmp");
-    SDL_SetColorKey(guard[ANIM_UP2], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
-    guard[ANIM_UP3]=IMG_Load("guard_up3.bmp");
-    SDL_SetColorKey(guard[ANIM_UP3], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
-    guard[ANIM_DOWN1]=IMG_Load("guard_down1.bmp");
-    SDL_SetColorKey(guard[ANIM_DOWN1], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
-    guard[ANIM_DOWN2]=IMG_Load("guard_down2.bmp");
-    SDL_SetColorKey(guard[ANIM_DOWN2], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
-    guard[ANIM_DOWN3]=IMG_Load("guard_down3.bmp");
-    SDL_SetColorKey(guard[ANIM_DOWN3], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
-    guard[ANIM_LEFT1]=IMG_Load("guard_left1.bmp");
-    SDL_SetColorKey(guard[ANIM_LEFT1], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
-    guard[ANIM_LEFT2]=IMG_Load("guard_left2.bmp");
-    SDL_SetColorKey(guard[ANIM_LEFT2], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
-    guard[ANIM_LEFT3]=IMG_Load("guard_left3.bmp");
-    SDL_SetColorKey(guard[ANIM_LEFT3], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
-    guard[ANIM_RIGHT1]=IMG_Load("guard_rigth1.bmp");
-    SDL_SetColorKey(guard[ANIM_RIGHT1], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
-    guard[ANIM_RIGHT2]=IMG_Load("guard_rigth2.bmp");
-    SDL_SetColorKey(guard[ANIM_RIGHT2], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
-    guard[ANIM_RIGHT3]=IMG_Load("guard_rigth3.bmp");
-    SDL_SetColorKey(guard[ANIM_RIGHT3], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
-    ///
-    skull[UP] = IMG_Load("skull_up.bmp");
-    SDL_SetColorKey(skull[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*skull)->format, 0, 0, 255));
-    skull[DOWN] = IMG_Load("skull_down.bmp");
-    SDL_SetColorKey(skull[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*skull)->format, 0, 0, 255));
-    skull[RIGHT] = IMG_Load("skull_right.bmp");
-    SDL_SetColorKey(skull [RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*skull)->format, 0, 0, 255));
-    skull[LEFT] = IMG_Load("skull_left.bmp");
-    SDL_SetColorKey(skull[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*skull)->format, 0, 0, 255));
-
-                    /* IMAGE SKULL */
-    skull[UP] = IMG_Load("skull_up.bmp");
-    SDL_SetColorKey(skull[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*skull)->format, 0, 0, 255));
-    skull[DOWN] = IMG_Load("skull_down.bmp");
-    SDL_SetColorKey(skull[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*skull)->format, 0, 0, 255));
-    skull[RIGHT] = IMG_Load("skull_right.bmp");
-    SDL_SetColorKey(skull [RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*skull)->format, 0, 0, 255));
-    skull[LEFT] = IMG_Load("skull_left.bmp");
-    SDL_SetColorKey(skull[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*skull)->format, 0, 0, 255));
-
-                    /* IMAGE DARUINA */
-    daruina[UP]=IMG_Load("daruina1.bmp");
-    SDL_SetColorKey(daruina[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*daruina)->format,0,0,255));
-    daruina[DOWN]=IMG_Load("daruina2.bmp");
-    SDL_SetColorKey(daruina[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*daruina)->format,0,0,255));
-    daruina[RIGHT]=IMG_Load("daruina3.bmp");
-    SDL_SetColorKey(daruina[RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*daruina)->format,0,0,255));
-    daruina[LEFT]=IMG_Load("daruina4.bmp");
-    SDL_SetColorKey(daruina[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*daruina)->format,0,0,255));
-
-                    /* IMAGE GRANMA */
-    granma[UP] = IMG_Load("granma_up.bmp");
-    SDL_SetColorKey(granma[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*granma)->format, 0, 0, 255));
-    granma[DOWN] = IMG_Load("granma_down.bmp");
-    SDL_SetColorKey(granma[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*granma)->format, 0, 0, 255));
-    granma[RIGHT] = IMG_Load("granma_right.bmp");
-    SDL_SetColorKey(granma[RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*granma)->format, 0, 0, 255));
-    granma[LEFT] = IMG_Load("granma_left.bmp");
-    SDL_SetColorKey(granma[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*granma)->format, 0, 0, 255));
-
-                    /* IMAGE KOUME */
-    koume[UP] = IMG_Load("koume_up.bmp");
-    SDL_SetColorKey(koume[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*koume)->format, 0, 0, 255));
-    koume[DOWN] = IMG_Load("koume_down.bmp");
-    SDL_SetColorKey(koume[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*koume)->format, 0, 0, 255));
-    koume[RIGHT] = IMG_Load("koume_right.bmp");
-    SDL_SetColorKey(koume [RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*koume)->format, 0, 0, 255));
-    koume[LEFT] = IMG_Load("koume_left.bmp");
-    SDL_SetColorKey(koume[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*koume)->format, 0, 0, 255));
-
-                    /* IMAGE MAPLE */
-    maple[UP] = IMG_Load("maple_up.bmp");
-    SDL_SetColorKey(maple[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*maple)->format, 0, 0, 255));
-    maple[DOWN] = IMG_Load("maple_down.bmp");
-    SDL_SetColorKey(maple[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*maple)->format, 0, 0, 255));
-    maple[RIGHT] = IMG_Load("maple_right.bmp");
-    SDL_SetColorKey(maple[RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*maple)->format, 0, 0, 255));
-    maple[LEFT] = IMG_Load("maple_left.bmp");
-    SDL_SetColorKey(maple [LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*maple)->format, 0, 0, 255));
-
-                        /* IMAGE OLDMAN */
-    oldman[UP] = IMG_Load("oldman_up.bmp");
-    SDL_SetColorKey(oldman[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*oldman)->format, 0, 0, 255));
-    oldman[DOWN] = IMG_Load("oldman_down.bmp");
-    SDL_SetColorKey(oldman[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*oldman)->format, 0, 0, 255));
-    oldman[RIGHT] = IMG_Load("oldman_right.bmp");
-    SDL_SetColorKey(oldman [RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*oldman)->format, 0, 0, 255));
-    oldman[LEFT] = IMG_Load("oldman_left.bmp");
-    SDL_SetColorKey(oldman[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*oldman)->format, 0, 0, 255));
-
-                        /* IMAGE NAYRU */
-    nayru[UP] = IMG_Load("nayru_up.bmp");
-    SDL_SetColorKey(nayru[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*nayru)->format, 0, 0, 255));
-    nayru[DOWN] = IMG_Load("nayru_down.bmp");
-    SDL_SetColorKey(nayru[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*nayru)->format, 0, 0, 255));
-    nayru[RIGHT] = IMG_Load("nayru_right.bmp");
-    SDL_SetColorKey(nayru [RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*nayru)->format, 0, 0, 255));
-    nayru[LEFT] = IMG_Load("nayru_left.bmp");
-    SDL_SetColorKey(nayru[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*nayru)->format, 0, 0, 255));
-
-                        /* IMAGE SARIA */
-    saria[UP] = IMG_Load("saria_up.bmp");
-    SDL_SetColorKey(saria[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*saria)->format, 0, 0, 255));
-    saria[DOWN] = IMG_Load("saria_down.bmp");
-    SDL_SetColorKey(saria[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*saria)->format, 0, 0, 255));
-    saria[RIGHT] = IMG_Load("saria_right.bmp");
-    SDL_SetColorKey(saria [RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*saria)->format, 0, 0, 255));
-    saria[LEFT] = IMG_Load("saria_left.bmp");
-    SDL_SetColorKey(saria[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*saria)->format, 0, 0, 255));
-
-                        /* IMAGE SHEIK */
-    sheik[UP] = IMG_Load("sheik_up.bmp");
-    SDL_SetColorKey(sheik[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*sheik)->format, 0, 0, 255));
-    sheik[DOWN] = IMG_Load("sheik_down.bmp");
-    SDL_SetColorKey(sheik[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*sheik)->format, 0, 0, 255));
-    sheik[RIGHT] = IMG_Load("sheik_right.bmp");
-    SDL_SetColorKey(sheik [RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*sheik)->format, 0, 0, 255));
-    sheik[LEFT] = IMG_Load("sheik_left.bmp");
-    SDL_SetColorKey(sheik[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*sheik)->format, 0, 0, 255));
-
-                        /* IMAGE RUTO */
-    ruto[UP] = IMG_Load("ruto_up.bmp");
-    SDL_SetColorKey(ruto[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*ruto)->format, 0, 0, 255));
-    ruto[DOWN] = IMG_Load("ruto_down.bmp");
-    SDL_SetColorKey(ruto[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*ruto)->format, 0, 0, 255));
-    ruto[RIGHT] = IMG_Load("ruto_right.bmp");
-    SDL_SetColorKey(ruto [RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*ruto)->format, 0, 0, 255));
-    ruto[LEFT] = IMG_Load("ruto_left.bmp");
-    SDL_SetColorKey(ruto[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*ruto)->format, 0, 0, 255));
-
-                        /* IMAGE RAURU */
-    rauru[UP]=IMG_Load("rauru_anim1.bmp");
-    SDL_SetColorKey(rauru[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*rauru)->format,0,0,255));
-    rauru[DOWN]=IMG_Load("rauru_anim2.bmp");
-    SDL_SetColorKey(rauru[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*rauru)->format,0,0,255));
-    rauru[LEFT]=IMG_Load("rauru_anim3.bmp");
-    SDL_SetColorKey(rauru[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*rauru)->format,0,0,255));
-    rauru[RIGHT]=IMG_Load("rauru_anim4.bmp");
-    SDL_SetColorKey(rauru[RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*rauru)->format,0,0,255));
 }
 
 /*
@@ -651,12 +449,11 @@ int ganon_move(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *positionG
 /*
 Fonction qui détérmine quand il y a un vainqeur.
 */
-int win(int points, SDL_Surface* screen, Mix_Music *gerudo)
+int win(int points, SDL_Surface* screen, Mix_Music *gerudo, int continuer)
 {
     if (points > 99)
     {
         Mix_PauseMusic();
-        int continuer = 1;
         char winner[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
         TTF_Font *police = NULL;
         police = TTF_OpenFont("triforce.ttf", 45);
@@ -680,7 +477,7 @@ int win(int points, SDL_Surface* screen, Mix_Music *gerudo)
                     continuer = 0;
                     break;
                 case SDL_KEYDOWN:
-                    if (event.key.keysym.sym == SDLK_SPACE)
+                    if (event.key.keysym.sym == SDLK_ESCAPE)
                     {
                         Mix_PauseMusic();
                         continuer = 0;
@@ -722,7 +519,7 @@ int win(int points, SDL_Surface* screen, Mix_Music *gerudo)
                     continuer = 0;
                     break;
                 case SDL_KEYDOWN:
-                    if (event.key.keysym.sym == SDLK_SPACE)
+                    if (event.key.keysym.sym == SDLK_ESCAPE)
                     {
                         Mix_PauseMusic();
                         continuer = 0;
@@ -734,7 +531,7 @@ int win(int points, SDL_Surface* screen, Mix_Music *gerudo)
             SDL_Flip(screen);
         }
     }
-    return 1;
+    return continuer;
 }
 
 /*
@@ -839,4 +636,206 @@ void garde(SDL_Surface* screen, SDL_Surface *guard[16])
         tour++;
         y+=3;
     }
+}
+
+/*
+Fonction qui permet de charger toutes les images du dossier.
+*/
+void setup_pictures (SDL_Surface *link[6],SDL_Surface *rupees[3],SDL_Surface *ganon[5], SDL_Surface *zelda[6], SDL_Surface *guard[16], SDL_Surface *skull[4],SDL_Surface *daruina[4],SDL_Surface *granma[4],SDL_Surface *koume[4],SDL_Surface *maple [4],SDL_Surface *oldman[4],SDL_Surface *nayru[4],SDL_Surface *saria[4],SDL_Surface *sheik[4], SDL_Surface *ruto[4], SDL_Surface *rauru[4])
+{
+    link[UP] = IMG_Load("link_up.bmp");
+    SDL_SetColorKey(link[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
+    link[DOWN] = IMG_Load("link_down.bmp");
+    SDL_SetColorKey(link[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
+    link[RIGHT] = IMG_Load("link_right.bmp");
+    SDL_SetColorKey(link[RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
+    link[LEFT] = IMG_Load("link_left.bmp");
+    SDL_SetColorKey(link[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
+//    link[HIT] = IMG_Load("link_hit.bmp");
+//   SDL_SetColorKey(link[HIT], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
+//    link[DOWN_ANIM] = IMG_Load("link_down_floor.bmp");
+//    SDL_SetColorKey(link[DOWN_ANIM], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
+    ///
+    rupees[GREEN_RUPEE] = IMG_Load("green_rupee.bmp");
+    SDL_SetColorKey(rupees[GREEN_RUPEE], SDL_SRCCOLORKEY, SDL_MapRGB((*rupees)->format, 0, 0, 255));
+    rupees[BLUE_RUPEE] = IMG_Load("blue_rupee.bmp");
+    SDL_SetColorKey(rupees[BLUE_RUPEE], SDL_SRCCOLORKEY, SDL_MapRGB((*rupees)->format, 0, 0, 255));
+    rupees[RED_RUPEE] = IMG_Load("red_rupee.bmp");
+    SDL_SetColorKey(rupees[RED_RUPEE], SDL_SRCCOLORKEY, SDL_MapRGB((*rupees)->format, 0, 0, 255));
+    ///
+    ganon[UP] = IMG_Load("ganon_V6.bmp");
+    SDL_SetColorKey(ganon[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*ganon)->format, 0, 0, 255));
+    ganon[DOWN] = IMG_Load("ganon_V6.bmp");
+    SDL_SetColorKey(ganon[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*ganon)->format, 0, 0, 255));
+    ganon[LEFT] = IMG_Load("ganon_V6.bmp");
+    SDL_SetColorKey(ganon[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*ganon)->format, 0, 0, 255));
+    ganon[RIGHT] = IMG_Load("ganon_V6.bmp");
+    SDL_SetColorKey(ganon[RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*ganon)->format, 0, 0, 255));
+    //ganon[FIGHT] = IMG_Load("ganon_V6.bmp");
+    //SDL_SetColorKey(ganon[], SDL_SRCCOLORKEY, SDL_MapRGB((*ganon)->format, 0, 0, 255));
+    ///
+    zelda[UP] = IMG_Load("zelda_for_gradin1.bmp");
+    SDL_SetColorKey(zelda[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*zelda)->format, 0, 0, 255));
+    zelda[DOWN] = IMG_Load("zelda_for_gradin2.bmp");
+    SDL_SetColorKey(zelda[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*zelda)->format, 0, 0, 255));
+    zelda[LEFT] = IMG_Load("zelda_for_gradin3.bmp");
+    SDL_SetColorKey(zelda[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*zelda)->format, 0, 0, 255));
+    zelda[RIGHT] = IMG_Load("zelda_for_gradin4.bmp");
+    SDL_SetColorKey(zelda[RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*zelda)->format, 0, 0, 255));
+    zelda[ANIM_UP1] = IMG_Load("zelda_for_gradin5.bmp");
+    SDL_SetColorKey(zelda[ANIM_UP1], SDL_SRCCOLORKEY, SDL_MapRGB((*zelda)->format, 0, 0, 255));
+    zelda[ANIM_UP2] = IMG_Load("zelda_for_gradin6.bmp");
+    SDL_SetColorKey(zelda[ANIM_UP2], SDL_SRCCOLORKEY, SDL_MapRGB((*zelda)->format, 0, 0, 255));
+    ///
+    guard[UP] = IMG_Load("guard_rotation1.bmp");
+    SDL_SetColorKey(guard[UP], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
+    guard[DOWN]=IMG_Load("guard_rotation2.bmp");
+    SDL_SetColorKey(guard[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
+    guard[RIGHT]=IMG_Load("guard_rotation4.bmp");
+    SDL_SetColorKey(guard[RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
+    guard[LEFT]=IMG_Load("guard_rotation3.bmp");
+    SDL_SetColorKey(guard[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
+    guard[ANIM_UP1]=IMG_Load("guard_up1.bmp");
+    SDL_SetColorKey(guard[ANIM_UP1], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
+    guard[ANIM_UP2]=IMG_Load("guard_up2.bmp");
+    SDL_SetColorKey(guard[ANIM_UP2], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
+    guard[ANIM_UP3]=IMG_Load("guard_up3.bmp");
+    SDL_SetColorKey(guard[ANIM_UP3], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
+    guard[ANIM_DOWN1]=IMG_Load("guard_down1.bmp");
+    SDL_SetColorKey(guard[ANIM_DOWN1], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
+    guard[ANIM_DOWN2]=IMG_Load("guard_down2.bmp");
+    SDL_SetColorKey(guard[ANIM_DOWN2], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
+    guard[ANIM_DOWN3]=IMG_Load("guard_down3.bmp");
+    SDL_SetColorKey(guard[ANIM_DOWN3], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
+    guard[ANIM_LEFT1]=IMG_Load("guard_left1.bmp");
+    SDL_SetColorKey(guard[ANIM_LEFT1], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
+    guard[ANIM_LEFT2]=IMG_Load("guard_left2.bmp");
+    SDL_SetColorKey(guard[ANIM_LEFT2], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
+    guard[ANIM_LEFT3]=IMG_Load("guard_left3.bmp");
+    SDL_SetColorKey(guard[ANIM_LEFT3], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
+    guard[ANIM_RIGHT1]=IMG_Load("guard_rigth1.bmp");
+    SDL_SetColorKey(guard[ANIM_RIGHT1], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
+    guard[ANIM_RIGHT2]=IMG_Load("guard_rigth2.bmp");
+    SDL_SetColorKey(guard[ANIM_RIGHT2], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
+    guard[ANIM_RIGHT3]=IMG_Load("guard_rigth3.bmp");
+    SDL_SetColorKey(guard[ANIM_RIGHT3], SDL_SRCCOLORKEY, SDL_MapRGB ((*guard)->format,0,0,255));
+    ///
+    skull[UP] = IMG_Load("skull_up.bmp");
+    SDL_SetColorKey(skull[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*skull)->format, 0, 0, 255));
+    skull[DOWN] = IMG_Load("skull_down.bmp");
+    SDL_SetColorKey(skull[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*skull)->format, 0, 0, 255));
+    skull[RIGHT] = IMG_Load("skull_right.bmp");
+    SDL_SetColorKey(skull [RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*skull)->format, 0, 0, 255));
+    skull[LEFT] = IMG_Load("skull_left.bmp");
+    SDL_SetColorKey(skull[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*skull)->format, 0, 0, 255));
+
+                    /* IMAGE SKULL */
+    skull[UP] = IMG_Load("skull_up.bmp");
+    SDL_SetColorKey(skull[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*skull)->format, 0, 0, 255));
+    skull[DOWN] = IMG_Load("skull_down.bmp");
+    SDL_SetColorKey(skull[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*skull)->format, 0, 0, 255));
+    skull[RIGHT] = IMG_Load("skull_right.bmp");
+    SDL_SetColorKey(skull [RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*skull)->format, 0, 0, 255));
+    skull[LEFT] = IMG_Load("skull_left.bmp");
+    SDL_SetColorKey(skull[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*skull)->format, 0, 0, 255));
+
+                    /* IMAGE DARUINA */
+    daruina[UP]=IMG_Load("daruina1.bmp");
+    SDL_SetColorKey(daruina[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*daruina)->format,0,0,255));
+    daruina[DOWN]=IMG_Load("daruina2.bmp");
+    SDL_SetColorKey(daruina[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*daruina)->format,0,0,255));
+    daruina[RIGHT]=IMG_Load("daruina3.bmp");
+    SDL_SetColorKey(daruina[RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*daruina)->format,0,0,255));
+    daruina[LEFT]=IMG_Load("daruina4.bmp");
+    SDL_SetColorKey(daruina[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*daruina)->format,0,0,255));
+
+                    /* IMAGE GRANMA */
+    granma[UP] = IMG_Load("granma_up.bmp");
+    SDL_SetColorKey(granma[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*granma)->format, 0, 0, 255));
+    granma[DOWN] = IMG_Load("granma_down.bmp");
+    SDL_SetColorKey(granma[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*granma)->format, 0, 0, 255));
+    granma[RIGHT] = IMG_Load("granma_right.bmp");
+    SDL_SetColorKey(granma[RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*granma)->format, 0, 0, 255));
+    granma[LEFT] = IMG_Load("granma_left.bmp");
+    SDL_SetColorKey(granma[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*granma)->format, 0, 0, 255));
+
+                    /* IMAGE KOUME */
+    koume[UP] = IMG_Load("koume_up.bmp");
+    SDL_SetColorKey(koume[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*koume)->format, 0, 0, 255));
+    koume[DOWN] = IMG_Load("koume_down.bmp");
+    SDL_SetColorKey(koume[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*koume)->format, 0, 0, 255));
+    koume[RIGHT] = IMG_Load("koume_right.bmp");
+    SDL_SetColorKey(koume [RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*koume)->format, 0, 0, 255));
+    koume[LEFT] = IMG_Load("koume_left.bmp");
+    SDL_SetColorKey(koume[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*koume)->format, 0, 0, 255));
+
+                    /* IMAGE MAPLE */
+    maple[UP] = IMG_Load("maple_up.bmp");
+    SDL_SetColorKey(maple[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*maple)->format, 0, 0, 255));
+    maple[DOWN] = IMG_Load("maple_down.bmp");
+    SDL_SetColorKey(maple[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*maple)->format, 0, 0, 255));
+    maple[RIGHT] = IMG_Load("maple_right.bmp");
+    SDL_SetColorKey(maple[RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*maple)->format, 0, 0, 255));
+    maple[LEFT] = IMG_Load("maple_left.bmp");
+    SDL_SetColorKey(maple [LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*maple)->format, 0, 0, 255));
+
+                        /* IMAGE OLDMAN */
+    oldman[UP] = IMG_Load("oldman_up.bmp");
+    SDL_SetColorKey(oldman[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*oldman)->format, 0, 0, 255));
+    oldman[DOWN] = IMG_Load("oldman_down.bmp");
+    SDL_SetColorKey(oldman[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*oldman)->format, 0, 0, 255));
+    oldman[RIGHT] = IMG_Load("oldman_right.bmp");
+    SDL_SetColorKey(oldman [RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*oldman)->format, 0, 0, 255));
+    oldman[LEFT] = IMG_Load("oldman_left.bmp");
+    SDL_SetColorKey(oldman[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*oldman)->format, 0, 0, 255));
+
+                        /* IMAGE NAYRU */
+    nayru[UP] = IMG_Load("nayru_up.bmp");
+    SDL_SetColorKey(nayru[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*nayru)->format, 0, 0, 255));
+    nayru[DOWN] = IMG_Load("nayru_down.bmp");
+    SDL_SetColorKey(nayru[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*nayru)->format, 0, 0, 255));
+    nayru[RIGHT] = IMG_Load("nayru_right.bmp");
+    SDL_SetColorKey(nayru [RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*nayru)->format, 0, 0, 255));
+    nayru[LEFT] = IMG_Load("nayru_left.bmp");
+    SDL_SetColorKey(nayru[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*nayru)->format, 0, 0, 255));
+
+                        /* IMAGE SARIA */
+    saria[UP] = IMG_Load("saria_up.bmp");
+    SDL_SetColorKey(saria[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*saria)->format, 0, 0, 255));
+    saria[DOWN] = IMG_Load("saria_down.bmp");
+    SDL_SetColorKey(saria[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*saria)->format, 0, 0, 255));
+    saria[RIGHT] = IMG_Load("saria_right.bmp");
+    SDL_SetColorKey(saria [RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*saria)->format, 0, 0, 255));
+    saria[LEFT] = IMG_Load("saria_left.bmp");
+    SDL_SetColorKey(saria[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*saria)->format, 0, 0, 255));
+
+                        /* IMAGE SHEIK */
+    sheik[UP] = IMG_Load("sheik_up.bmp");
+    SDL_SetColorKey(sheik[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*sheik)->format, 0, 0, 255));
+    sheik[DOWN] = IMG_Load("sheik_down.bmp");
+    SDL_SetColorKey(sheik[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*sheik)->format, 0, 0, 255));
+    sheik[RIGHT] = IMG_Load("sheik_right.bmp");
+    SDL_SetColorKey(sheik [RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*sheik)->format, 0, 0, 255));
+    sheik[LEFT] = IMG_Load("sheik_left.bmp");
+    SDL_SetColorKey(sheik[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*sheik)->format, 0, 0, 255));
+
+                        /* IMAGE RUTO */
+    ruto[UP] = IMG_Load("ruto_up.bmp");
+    SDL_SetColorKey(ruto[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*ruto)->format, 0, 0, 255));
+    ruto[DOWN] = IMG_Load("ruto_down.bmp");
+    SDL_SetColorKey(ruto[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*ruto)->format, 0, 0, 255));
+    ruto[RIGHT] = IMG_Load("ruto_right.bmp");
+    SDL_SetColorKey(ruto [RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*ruto)->format, 0, 0, 255));
+    ruto[LEFT] = IMG_Load("ruto_left.bmp");
+    SDL_SetColorKey(ruto[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*ruto)->format, 0, 0, 255));
+
+                        /* IMAGE RAURU */
+    rauru[UP]=IMG_Load("rauru_anim1.bmp");
+    SDL_SetColorKey(rauru[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*rauru)->format,0,0,255));
+    rauru[DOWN]=IMG_Load("rauru_anim2.bmp");
+    SDL_SetColorKey(rauru[DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*rauru)->format,0,0,255));
+    rauru[LEFT]=IMG_Load("rauru_anim3.bmp");
+    SDL_SetColorKey(rauru[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*rauru)->format,0,0,255));
+    rauru[RIGHT]=IMG_Load("rauru_anim4.bmp");
+    SDL_SetColorKey(rauru[RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*rauru)->format,0,0,255));
 }
