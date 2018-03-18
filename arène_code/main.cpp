@@ -146,6 +146,7 @@ int play (SDL_Surface* screen)
     while (continuer)
     {
         SDL_BlitSurface(background, NULL, screen, &positionBackground);
+        SDL_BlitSurface(scoreboard, NULL, screen, &positionScoreboard);
         for (i=0;i<26;i++)
         {
             positionPlayer.x =links[i].x;
@@ -198,24 +199,43 @@ int play (SDL_Surface* screen)
             positionPlayer.y*= TAILLE_BLOC;
             maps[links[i].x][links[i].y] = IA;
             SDL_BlitSurface(linkNow, NULL, screen, &positionPlayer);
+            ///
+            position.x = 1400;
+            position.y = 150 + i*25;
+            SDL_BlitSurface(rupees[GREEN_RUPEE], NULL, screen, &position);
+            p_points = TTF_RenderText_Blended(police2, score, couleurJaune);
+            position.x = 1425;
+            position.y = 155 + i*25;
+            if (points < 10)
+            {
+                sprintf(score, "X 00%d",links[i].points);
+            }
+            else if (points < 100)
+            {
+                sprintf(score, "X 0%d",links[i].points);
+            }
+            else
+            {
+                sprintf(score, "X %d",links[i].points);
+            }
+            p_points = TTF_RenderText_Blended(police2, score, couleurJaune);
+            SDL_BlitSurface(p_points, NULL, screen, &position);
         }
         time = SDL_GetTicks();
         if (time - lastTime >= 1000)
         {
             stime++;
-        if (stime == 60)
-        {
-            mtime++;
-            stime = 0;
-        }
-        lastTime = time;
+            if (stime == 60)
+            {
+                mtime++;
+                stime = 0;
+            }
+            lastTime = time;
         }
         timer(temps,score,time,lastTime,stime,mtime,points);
-        p_points = TTF_RenderText_Blended(police2, score, couleurJaune);
         texte = TTF_RenderText_Blended(police, temps, couleurNoire);
         position.x = positionPlayer.x * TAILLE_BLOC;
         position.y = positionPlayer.y * TAILLE_BLOC;
-        SDL_BlitSurface(scoreboard, NULL, screen, &positionScoreboard);
         ///points -= ganon_move(maps, &positionGanon, &positionPlayer, s_degat ,points);  Désactivation provisoire de ganon pour une fonte total de cette IA
         animation(screen, zelda, skull,daruina,granma,koume,maple,oldman,nayru,saria,sheik,ruto,rauru);
         for (i = MINX ; i < MAXX ; i++)
@@ -237,15 +257,9 @@ int play (SDL_Surface* screen)
                 }
             }
         }
-        position.x = 1000;
-        position.y = 25;
-        SDL_BlitSurface(rupees[GREEN_RUPEE], NULL, screen, &position);
         position.x = 70;
         position.y = 25; //30
         SDL_BlitSurface(texte, NULL, screen, &position);
-        position.x = 1025;
-        position.y = 30;//78
-        SDL_BlitSurface(p_points, NULL, screen, &position);
         position.x = positionGanon.x; //* TAILLE_BLOC;
         position.y = positionGanon.y; //* TAILLE_BLOC;
         SDL_BlitSurface(ganonNow, NULL, screen, &position);
@@ -312,18 +326,6 @@ void timer (char temps[20],char score[6],int time,int lastTime,int stime,int mti
     else
     {
         sprintf(temps, "Timer : %d : %d",mtime,stime);
-    }
-    if (points < 10)
-    {
-        sprintf(score, "X 00%d",points);
-    }
-    else if (points < 100)
-    {
-        sprintf(score, "X 0%d",points);
-    }
-    else
-    {
-        sprintf(score, "X %d",points);
     }
 }
 
