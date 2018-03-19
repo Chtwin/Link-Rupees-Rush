@@ -14,10 +14,7 @@ La SDL **1.2**: <https://www.libsdl.org/download-1.2.php><br/>
 La **SDL ttf**: <https://www.libsdl.org/projects/SDL_ttf/release-1.2.html><br/>
 La **SDL image**:<https://www.libsdl.org/projects/SDL_image/release-1.2.html><br/>
 La **SDL mixer**:<https://www.libsdl.org/projects/SDL_mixer/release-1.2.html><br/>
-Voici le cours Openclassroom qui explique comment installer la SDL: <https://openclassrooms.com/courses/apprenez-a-programmer-en-c/installation-de-la-sdl#/id/r-17116><br/>
-Voici egalement le lien du cours Openclassroom qui explique comment installer la SDL image et il suffira de suivre le même procédé pour les deux dernières bibliotèques:<https://openclassrooms.com/courses/apprenez-a-programmer-en-c/afficher-des-images#/id/r-17795><br/>
-**Si vous rencontrez trop de problèmes lors de l'installation je pourrai également réaliser une vidéo complète qui explique comment tout installer**
-Votez ici si vous en avez besoin : <https://www.strawpoll.me/15270315><br/>
+**Lien vers la vidéo qui explique comment télécharger et installer la SDL et le projet:** https://www.youtube.com/watch?v=-KT6cJdJakQ&feature=youtu.be&ab_channel=Chtwin<br/>
 
 # Configuration
 
