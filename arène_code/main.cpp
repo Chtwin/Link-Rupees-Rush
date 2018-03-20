@@ -101,11 +101,11 @@ int play (SDL_Surface* screen)
     {
         Mix_Volume(i,VOLUME);
     }
-    SDL_Surface *rauru[4] = {NULL},*ruto[4] = {NULL},*sheik[4] = {NULL},*saria[4] = {NULL},*nayru[4] = {NULL},*oldman[4] = {NULL},*maple[4] = {NULL},*koume[4] = {NULL},*granma[4] = {NULL},*daruina[4] = {NULL},*skull[4] = {NULL}, *guard[16] = {NULL}, *link[6] = {NULL}, *rupees[3] = {NULL}, *zelda[6] = {NULL}, *ganon[5] ={NULL},*vide = NULL, *wall = NULL, *linkNow = NULL, *background = NULL, *scoreboard, *texte = NULL, *p_points = NULL, *ganonNow = NULL;
+    SDL_Surface *rauru[4] = {NULL},*ruto[4] = {NULL},*sheik[4] = {NULL},*saria[4] = {NULL},*nayru[4] = {NULL},*oldman[4] = {NULL},*maple[4] = {NULL},*koume[4] = {NULL},*granma[4] = {NULL},*daruina[4] = {NULL},*skull[4] = {NULL}, *guard[16] = {NULL}, *link[21] = {NULL}, *rupees[3] = {NULL}, *zelda[6] = {NULL}, *ganon[5] ={NULL},*vide = NULL, *wall = NULL, *linkNow = NULL, *background = NULL, *scoreboard, *texte = NULL, *p_points = NULL, *ganonNow = NULL;
     TTF_Font *police = NULL, *police2 = NULL;
     Mix_Music *gerudo;
     Mix_Chunk *s_ruppes, *s_sword, *s_degat;
-    SDL_Rect position, positionPlayer, positionGanon, positionBackground, positionScoreboard;
+    SDL_Rect position, positionBackground, positionScoreboard;
     SDL_Event event;
     positionBackground.x=0;
     positionBackground.y=0;
@@ -115,42 +115,29 @@ int play (SDL_Surface* screen)
     scoreboard = IMG_Load("scoreboard.bmp");
     setup_pictures(link, rupees,ganon, zelda, guard, skull,daruina,granma,koume,maple,oldman,nayru,saria,sheik,ruto,rauru);
     setup_map(maps);
-    ganonNow = ganon[UP];
     linkNow = link[DOWN];
     police = TTF_OpenFont("triforce.ttf", 35);
     police2 = TTF_OpenFont("triforce.ttf", 15);
     SDL_Color couleurNoire = {0, 0, 0};
     SDL_Color couleurJaune = {255, 255, 0};
-    positionPlayer.x = NB_BLOCS_LARGEUR / 6;
-    positionPlayer.y = NB_BLOCS_HAUTEUR / 6 +20;
-    positionGanon.x = LARGEUR_FENETRE / 2 - 50;
-    positionGanon.y = HAUTEUR_FENETRE / 2 - 55;
     s_ruppes = Mix_LoadWAV("get_rupee.wav");
     s_sword = Mix_LoadWAV("link_sword1.wav");
     gerudo = Mix_LoadMUS("gerudo_ost.flac");
     s_degat = Mix_LoadWAV("degat.wav");
     Mix_VolumeMusic(VOLUME);
     Mix_PlayMusic(gerudo, -1);
-    SDL_BlitSurface(background, NULL, screen, &positionBackground);
     Player links[26];
-    for (i=0;i<26;i++)
-    {
-        links[i].points = 20;
-        links[i].x = 30+i;
-        links[i].y = 35+i;
-        positionPlayer.x = links[i].x * TAILLE_BLOC;
-        positionPlayer.y = links[i].y * TAILLE_BLOC;
-        SDL_BlitSurface(linkNow, NULL, screen, &positionPlayer);
-        maps[links[i].x][links[i].y] = links[i].points;
-    }
+    setup_ia(maps, links);
+    ganonNow = ganon[DOWN];
     while (continuer)
     {
         SDL_BlitSurface(background, NULL, screen, &positionBackground);
         SDL_BlitSurface(scoreboard, NULL, screen, &positionScoreboard);
         for (i=0;i<26;i++)
         {
-            positionPlayer.x =links[i].x;
-            positionPlayer.y =links[i].y;
+            links[i].bouclier = false;
+            position.x =links[i].x;
+            position.y =links[i].y;
             SDL_PollEvent(&event);  ///SDL_WaitEvent
             switch(event.type)
             {
@@ -164,41 +151,60 @@ int play (SDL_Surface* screen)
                     }
                     break;
                 default:
-                    switch(test_ia(maps, links))
+                    switch(test_ia(maps, links[i].x, links[i].y, links[i].points, links[i].item, links[i].bouclier, links[i].orientation))
                     {
                         case HAUT:
                             linkNow = link[UP];
                             links[i].orientation = UP;
-                            links[i].points += movePlayer(maps, &positionPlayer, UP, s_ruppes);
+                            links[i].points += movePlayer(maps, &position, UP, s_ruppes);
                             break;
                         case BAS:
                             linkNow = link[DOWN];
                             links[i].orientation = DOWN;
-                            links[i].points += movePlayer(maps, &positionPlayer, DOWN, s_ruppes);
+                            links[i].points += movePlayer(maps, &position, DOWN, s_ruppes);
                             break;
                         case DROITE:
                             linkNow = link[RIGHT];
                             links[i].orientation = RIGHT;
-                            links[i].points += movePlayer(maps, &positionPlayer, RIGHT, s_ruppes);
+                            links[i].points += movePlayer(maps, &position, RIGHT, s_ruppes);
                             break;
                         case GAUCHE:
                             linkNow = link[LEFT];
                             links[i].orientation = LEFT;
-                            links[i].points += movePlayer(maps, &positionPlayer, LEFT, s_ruppes);
+                            links[i].points += movePlayer(maps, &position, LEFT, s_ruppes);
                             break;
-                         //case EPEE:
-                            //linkNow = link[HIT];
+                         case EPEE:
+                            switch (links[i].orientation)
+                            {
+                                case UP:
+                                    linkNow = link[HIT_UP];
+                                    break;
+                                case DOWN:
+                                    linkNow = link[HIT_DOWN];
+                                    break;
+                                case RIGHT:
+                                    linkNow = link[HIT_RIGHT];
+                                    break;
+                                case LEFT:
+                                    linkNow = link[HIT_LEFT];
+                                    break;
+                            }
+                            damage(maps, links, i);
                             //Mix_PlayChannel(1, s_sword, 0);
-                            //break;
+                            break;
+                        case PARER:
+                            linkNow = link[SHIELD];
+                            links[i].bouclier = true;
+                            break;
                     }
                     break;
             }
-            links[i].x = positionPlayer.x;
-            links[i].y = positionPlayer.y;
-            positionPlayer.x*= TAILLE_BLOC;
-            positionPlayer.y*= TAILLE_BLOC;
+            links[i].x = position.x;
+            links[i].y = position.y;
+            position.x*= TAILLE_BLOC;
+            position.y*= TAILLE_BLOC;
             maps[links[i].x][links[i].y] = IA;
-            SDL_BlitSurface(linkNow, NULL, screen, &positionPlayer);
+            SDL_BlitSurface(linkNow, NULL, screen, &position);
             ///
             position.x = 1400;
             position.y = 150 + i*25;
@@ -208,15 +214,15 @@ int play (SDL_Surface* screen)
             position.y = 155 + i*25;
             if (points < 10)
             {
-                sprintf(score, "X 00%d",links[i].points);
+                sprintf(score, "X 00%d\tJ%d",links[i].points, i+1);
             }
             else if (points < 100)
             {
-                sprintf(score, "X 0%d",links[i].points);
+                sprintf(score, "X 0%d\tJ%d",links[i].points,i+1);
             }
             else
             {
-                sprintf(score, "X %d",links[i].points);
+                sprintf(score, "X %d\tJ%d",links[i].points,i+1);
             }
             p_points = TTF_RenderText_Blended(police2, score, couleurJaune);
             SDL_BlitSurface(p_points, NULL, screen, &position);
@@ -234,54 +240,32 @@ int play (SDL_Surface* screen)
         }
         timer(temps,score,time,lastTime,stime,mtime,points);
         texte = TTF_RenderText_Blended(police, temps, couleurNoire);
-        position.x = positionPlayer.x * TAILLE_BLOC;
-        position.y = positionPlayer.y * TAILLE_BLOC;
-        ///points -= ganon_move(maps, &positionGanon, &positionPlayer, s_degat ,points);  Désactivation provisoire de ganon pour une fonte total de cette IA
+        ganon_move(maps, s_degat , links, &position); // Désactivation provisoire de ganon pour une fonte total de cette IA
+        SDL_BlitSurface(ganonNow, NULL, screen, &position);
         animation(screen, zelda, skull,daruina,granma,koume,maple,oldman,nayru,saria,sheik,ruto,rauru);
-        for (i = MINX ; i < MAXX ; i++)
-        {
-            for (j = MINY ; j < MAXY ; j++)
-            {
-                position.x = i*TAILLE_BLOC + 10;
-                position.y = j*TAILLE_BLOC + 10;
-                switch(maps[i][j])
-                {
-                    case GREEN_RUPEE:
-                        SDL_BlitSurface(rupees[GREEN_RUPEE], NULL, screen, &position);
-                        break;
-                    case BLUE_RUPEE:
-                        SDL_BlitSurface(rupees[BLUE_RUPEE], NULL, screen, &position);
-                        break;
-                    case RED_RUPEE:
-                        SDL_BlitSurface(rupees[RED_RUPEE], NULL, screen, &position);
-                }
-            }
-        }
+        blit_items(maps,screen,rupees);
         position.x = 70;
         position.y = 25; //30
         SDL_BlitSurface(texte, NULL, screen, &position);
-        position.x = positionGanon.x; //* TAILLE_BLOC;
-        position.y = positionGanon.y; //* TAILLE_BLOC;
-        SDL_BlitSurface(ganonNow, NULL, screen, &position);
+        //SDL_BlitSurface(ganonNow, NULL, screen, &position);
         garde(screen,guard);
         SDL_Flip(screen);
         continuer = win(points, screen, gerudo, continuer);
     }
-    SDL_EnableKeyRepeat(0, 0);
     SDL_FreeSurface(wall);
     SDL_FreeSurface(texte);
     SDL_FreeSurface(p_points);
     SDL_FreeSurface(vide);
     Mix_FreeChunk(s_sword);
     Mix_FreeChunk(s_ruppes);
-    for (i = 0 ; i < 6 ; i++)
+    for (i = 0 ; i < 20 ; i++)
     {
         SDL_FreeSurface(link[i]);
     }
     TTF_CloseFont(police);
     TTF_Quit();
     Mix_PauseMusic();
-    return 0;
+    return 1;
 }
 
 /*
@@ -315,6 +299,21 @@ void setup_map (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR])
 }
 
 /*
+Fonction qui initialise les paramètres des IAs.
+*/
+void setup_ia(int maps[][NB_BLOCS_HAUTEUR], Player links[26])
+{
+    int i;
+    for (i=0;i<26;i++)
+    {
+        links[i].points = 20;
+        links[i].x = 20 + rand()%80;
+        links[i].y = 30 + rand()%40;
+        maps[links[i].x][links[i].y] = links[i].points;
+    }
+}
+
+/*
 Fonction qui permet de gérer le chronométre du jeu.
 */
 void timer (char temps[20],char score[6],int time,int lastTime,int stime,int mtime,int points)
@@ -340,7 +339,7 @@ int movePlayer (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *position
     switch (direction)
     {
         case UP:
-            if (position->y - 1 < MINY || position->y - 1 == IA)
+            if (position->y - 1 < MINY || position->y - 1 == IA || position->y - 1 == GANON)
                 break;
 
             position->y--;
@@ -348,7 +347,7 @@ int movePlayer (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *position
             break;
 
         case DOWN:
-            if (position->y + 1 >= MAXY || position->y + 1 == IA)
+            if (position->y + 1 >= MAXY || position->y + 1 == IA || position->y + 1 == GANON)
                 break;
 
             position->y++;
@@ -356,7 +355,7 @@ int movePlayer (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *position
             break;
 
         case RIGHT:
-            if (position->x + 1 >= MAXX || position->x + 1 == IA)
+            if (position->x + 1 >= MAXX || position->x + 1 == IA || position->x + 1 == GANON)
                 break;
 
             position->x++;
@@ -364,7 +363,7 @@ int movePlayer (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *position
             break;
 
         case LEFT:
-            if (position->x - 1 < MINX || position->x - 1 == IA)
+            if (position->x - 1 < MINX || position->x - 1 == IA || position->x - 1 == GANON)
                 break;
 
             position->x--;
@@ -397,78 +396,105 @@ int movePlayer (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *position
 
         (*currentCase) = VIDE;
 
-        Mix_PlayChannel(1, s_ruppes, 0);
+        //Mix_PlayChannel(1, s_ruppes, 0);  Désactivation du son des rubis à cause d'un bug;
     }
 
     return bonus;
 }
 
+void damage(int maps[][NB_BLOCS_HAUTEUR], Player links[26], int playernow)
+{
+
+}
 
 /*
 Fonction qui permet à Ganon de se déplacer.
 */
-int ganon_move(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *positionGanon, SDL_Rect *positionPlayer, Mix_Chunk *s_degat, int malus)
+void ganon_move(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], Mix_Chunk *s_degat, Player links[26], SDL_Rect *position)
 {
-    int x = positionPlayer->x * TAILLE_BLOC;
-    int y = positionPlayer->y * TAILLE_BLOC;
-    int i = 0, j = 0, decalx = positionGanon->x - x, decaly = positionGanon->y - y ;
-    if (decalx > 0)
+    int i = 0, j = 0;
+    int *aroundCase[4], *currentCase = NULL;
+    static int research = 1;
+    static int bestlink = 0;
+    static int ganonx = LARGEUR_FENETRE / 2 - 50;
+    static int ganony = HAUTEUR_FENETRE / 2;
+    static int delay = 10000;
+    if (SDL_GetTicks()> delay)
     {
-        if (decalx>5)
+        if (research == 1)
         {
-            positionGanon->x -= 5;
+            for(i=1;i<26;i++)
+            {
+                if(links[bestlink].points < links[i].points)
+                {
+                    bestlink = i;
+                }
+            }
+            research = 0;
         }
-        else
+        int x = links[bestlink].x * TAILLE_BLOC;
+        int y = links[bestlink].y * TAILLE_BLOC;
+        int decalx = ganonx - x, decaly = ganony - y;
+        if (decalx > 0)
         {
-            positionGanon->x -=decalx;
+            if (decalx>5)
+            {
+                ganonx -= 5;
+            }
+            else
+            {
+                ganonx -=decalx;
+            }
+        }
+        else if (decalx < 0)
+        {
+            if (decalx > -5)
+            {
+                ganonx +=decalx;
+            }
+            else
+            {
+                ganonx += 5;
+            }
+        }
+        if (decaly > 0)
+        {
+            if (decaly < 5)
+            {
+                ganony -=decaly;
+            }
+            else
+            {
+                ganony -= 5;
+            }
+        }
+        else if (decaly < 0)
+        {
+            if (decaly > -5)
+            {
+                ganony +=decaly;
+            }
+            else
+            {
+                ganony += 5;
+            }
+        }
+        decalx = ganonx - x;
+        decaly = ganony - y;
+        if (decalx == 0 && decaly == 0)
+        {
+            links[bestlink].points -= 20;
+            ganonx = LARGEUR_FENETRE / 2 - 50;
+            ganony = HAUTEUR_FENETRE / 2 ;
+            research = 1;
+            Mix_PlayChannel(2, s_degat, 0);
+            delay = SDL_GetTicks() + 10000;
         }
     }
-    else if (decalx < 0)
-    {
-        if (decalx > -5)
-        {
-            positionGanon->x +=decalx;
-        }
-        else
-        {
-            positionGanon->x += 5;
-        }
-    }
-    if (decaly > 0)
-    {
-        if (decaly < 5)
-        {
-            positionGanon->y -=decaly;
-        }
-        else
-        {
-            positionGanon->y -= 5;
-        }
-    }
-    else if (decaly < 0)
-    {
-        if (decaly > -5)
-        {
-            positionGanon->y +=decaly;
-        }
-        else
-        {
-            positionGanon->y += 5;
-        }
-    }
-    decalx = positionGanon->x - x;
-    decaly = positionGanon->y - y;
-    if ((decalx == 0) && (decaly == 0))
-    {
-        positionGanon->x = LARGEUR_FENETRE / 2 - 50;
-        positionGanon->y = HAUTEUR_FENETRE / 2 ;
-        Mix_PlayChannel(1, s_degat, 1);
-        Mix_PlayChannel(2, s_degat, 0);
-        return 50;
-    }
-    return 0;
+    position->x = ganonx;
+    position->y = ganony;
+    maps[ganonx/TAILLE_BLOC][ganony/TAILLE_BLOC] = GANON;
 }
-
 
 /*
 Fonction qui détérmine quand il y a un vainqeur.
@@ -559,72 +585,47 @@ int win(int points, SDL_Surface* screen, Mix_Music *gerudo, int continuer)
 }
 
 /*
-Fonction qui gère les déplacements des pnjs. (pas du tout optimisé)
+Fonction qui gère les déplacements des pnjs.
 */
 void animation(SDL_Surface* screen, SDL_Surface *zelda[6], SDL_Surface *skull[4],SDL_Surface *daruina[4],SDL_Surface *granma[4],SDL_Surface *koume[4],SDL_Surface *maple [4],SDL_Surface *oldman[4],SDL_Surface *nayru[4],SDL_Surface *saria[4],SDL_Surface *sheik[4], SDL_Surface *ruto[4], SDL_Surface *rauru[4])
 {
     static int tour = 0;
-    SDL_Rect a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r;
-    int x = 1197, y = 385, x1 = 1225, y2 = 387,boucle;
+    SDL_Rect pnj[16];
+    int x = 1197, y = 385, x1 = 1225, y2 = 387,boucle, i;
     for (boucle=0;boucle<2;boucle++)
     {
-        a.x = x;
-        a.y = y;
-        b.x = x;
-        b.y = y + ECART;
-        c.x = x;
-        c.y = y + 2*ECART;
-        d.x = x;
-        d.y = y + 3*ECART;
-        e.x = x;
-        e.y = y + 4*ECART;
-        f.x = x;
-        f.y = y + 5*ECART;
-        g.x = x;
-        g.y = y + 6*ECART;
-        h.x = x;
-        h.y = y + 7*ECART;
-        ///
-        i.x = x1;
-        i.y = y2;
-        j.x = x1;
-        j.y = y2 + ECART;
-        k.x = x1;
-        k.y = y2 + 2*ECART;
-        l.x = x1;
-        l.y = y2 + 3*ECART;
-        m.x = x1;
-        m.y = y2 + 4*ECART;
-        n.x = x1;
-        n.y = y2 + 5*ECART;
-        o.x = x1;
-        o.y = y2 + 6*ECART;
-        p.x = x1;
-        p.y = y2 + 7*ECART;
+        for (i=0;i<8;i++)
+        {
+                pnj[i].x = x;
+                pnj[i].y = y + ECART * i;
+                pnj[i+8].x = x1;
+                pnj[i+8].y = y2 + ECART * i;
+        }
+
         tour%= 4;
-        SDL_BlitSurface(rauru[tour], NULL, screen, &a);
-        SDL_BlitSurface(skull[tour], NULL, screen, &b);
-        SDL_BlitSurface(daruina[tour], NULL, screen, &c);
-        SDL_BlitSurface(granma[tour], NULL, screen, &d);
-        SDL_BlitSurface(koume[tour], NULL, screen, &e);
-        SDL_BlitSurface(maple[tour], NULL, screen, &f);
-        SDL_BlitSurface(oldman[tour], NULL, screen, &g);
-        SDL_BlitSurface(saria[tour], NULL, screen, &h);
+        SDL_BlitSurface(rauru[tour], NULL, screen, &pnj[0]);
+        SDL_BlitSurface(skull[tour], NULL, screen, &pnj[1]);
+        SDL_BlitSurface(daruina[tour], NULL, screen, &pnj[2]);
+        SDL_BlitSurface(granma[tour], NULL, screen, &pnj[3]);
+        SDL_BlitSurface(koume[tour], NULL, screen, &pnj[4]);
+        SDL_BlitSurface(maple[tour], NULL, screen, &pnj[5]);
+        SDL_BlitSurface(oldman[tour], NULL, screen, &pnj[6]);
+        SDL_BlitSurface(saria[tour], NULL, screen, &pnj[7]);
         ///
-        SDL_BlitSurface(nayru[tour], NULL, screen, &i);
-        SDL_BlitSurface(oldman[tour], NULL, screen, &j);
-        SDL_BlitSurface(maple[tour], NULL, screen, &k);
-        SDL_BlitSurface(koume[tour], NULL, screen, &l);
-        SDL_BlitSurface(granma[tour], NULL, screen, &m);
-        SDL_BlitSurface(daruina[tour], NULL, screen, &n);
-        SDL_BlitSurface(skull[tour], NULL, screen, &o);
-        SDL_BlitSurface(sheik[tour], NULL, screen, &p);
+        SDL_BlitSurface(nayru[tour], NULL, screen, &pnj[8]);
+        SDL_BlitSurface(oldman[tour], NULL, screen, &pnj[9]);
+        SDL_BlitSurface(maple[tour], NULL, screen, &pnj[10]);
+        SDL_BlitSurface(koume[tour], NULL, screen, &pnj[11]);
+        SDL_BlitSurface(granma[tour], NULL, screen, &pnj[12]);
+        SDL_BlitSurface(daruina[tour], NULL, screen, &pnj[13]);
+        SDL_BlitSurface(skull[tour], NULL, screen, &pnj[14]);
+        SDL_BlitSurface(sheik[tour], NULL, screen, &pnj[15]);
         ///
         x = 35;
         y = 385;
         x1 = 60;
         y2 = 387;
-        }
+    }
     if (SDL_GetTicks()%20==0)
     {
         tour++;
@@ -663,9 +664,37 @@ void garde(SDL_Surface* screen, SDL_Surface *guard[16])
 }
 
 /*
+Fonction qui permet d'afficher les items dans l'arène.
+*/
+void blit_items(int maps[][NB_BLOCS_HAUTEUR], SDL_Surface* screen, SDL_Surface* rupees[3])
+{
+    int i, j;
+    SDL_Rect position;
+    for (i = MINX ; i < MAXX ; i++)
+    {
+        for (j = MINY ; j < MAXY ; j++)
+        {
+            position.x = i*TAILLE_BLOC + 10;
+            position.y = j*TAILLE_BLOC + 10;
+            switch(maps[i][j])
+            {
+                case GREEN_RUPEE:
+                    SDL_BlitSurface(rupees[GREEN_RUPEE], NULL, screen, &position);
+                    break;
+                case BLUE_RUPEE:
+                    SDL_BlitSurface(rupees[BLUE_RUPEE], NULL, screen, &position);
+                    break;
+                case RED_RUPEE:
+                    SDL_BlitSurface(rupees[RED_RUPEE], NULL, screen, &position);
+            }
+        }
+    }
+}
+
+/*
 Fonction qui permet de charger toutes les images du dossier.
 */
-void setup_pictures (SDL_Surface *link[6],SDL_Surface *rupees[3],SDL_Surface *ganon[5], SDL_Surface *zelda[6], SDL_Surface *guard[16], SDL_Surface *skull[4],SDL_Surface *daruina[4],SDL_Surface *granma[4],SDL_Surface *koume[4],SDL_Surface *maple [4],SDL_Surface *oldman[4],SDL_Surface *nayru[4],SDL_Surface *saria[4],SDL_Surface *sheik[4], SDL_Surface *ruto[4], SDL_Surface *rauru[4])
+void setup_pictures (SDL_Surface *link[21],SDL_Surface *rupees[3],SDL_Surface *ganon[5], SDL_Surface *zelda[6], SDL_Surface *guard[16], SDL_Surface *skull[4],SDL_Surface *daruina[4],SDL_Surface *granma[4],SDL_Surface *koume[4],SDL_Surface *maple [4],SDL_Surface *oldman[4],SDL_Surface *nayru[4],SDL_Surface *saria[4],SDL_Surface *sheik[4], SDL_Surface *ruto[4], SDL_Surface *rauru[4])
 {
     link[UP] = IMG_Load("link_up.bmp");
     SDL_SetColorKey(link[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
@@ -675,10 +704,19 @@ void setup_pictures (SDL_Surface *link[6],SDL_Surface *rupees[3],SDL_Surface *ga
     SDL_SetColorKey(link[RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
     link[LEFT] = IMG_Load("link_left.bmp");
     SDL_SetColorKey(link[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
-//    link[HIT] = IMG_Load("link_hit.bmp");
-//   SDL_SetColorKey(link[HIT], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
-//    link[DOWN_ANIM] = IMG_Load("link_down_floor.bmp");
-//    SDL_SetColorKey(link[DOWN_ANIM], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
+    link[HIT_UP] = IMG_Load("up_hit.bmp");
+    SDL_SetColorKey(link[HIT_UP], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
+    link[HIT_DOWN] = IMG_Load("down_hit.bmp");
+    SDL_SetColorKey(link[HIT_DOWN], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
+    link[HIT_RIGHT] = IMG_Load("right_hit.bmp");
+    SDL_SetColorKey(link[HIT_RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
+    link[HIT_LEFT] = IMG_Load("left_hit.bmp");
+    SDL_SetColorKey(link[HIT_LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
+    link[SHIELD] = IMG_Load("shield_link.bmp");
+    SDL_SetColorKey(link[SHIELD], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
+
+    //link[DOWN_ANIM] = IMG_Load("link_down_floor.bmp");
+    //SDL_SetColorKey(link[DOWN_ANIM], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
     ///
     rupees[GREEN_RUPEE] = IMG_Load("green_rupee.bmp");
     SDL_SetColorKey(rupees[GREEN_RUPEE], SDL_SRCCOLORKEY, SDL_MapRGB((*rupees)->format, 0, 0, 255));
