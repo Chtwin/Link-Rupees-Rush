@@ -40,6 +40,8 @@ Les actions possibles citées ci-dessus sont: se déplacer, frapper, parer, util
 Vous aurez davantage d'informations très prochainement.<br/>
 Vous pouvez désormais déplacer l'IA à l'aide de la fonction **test_ia** contenu dans le header. Vous disposez d'un tableau contenant la position des rubis ainsi que celle des IAs. De plus, vous disposez des stats de toutes les IAs de l'arène. La beta du scoreboard vous indique le nombre de rubis de chaque IA à l'écran.<br/>
 Nous travaillons sur l'ajout du multi fonction pour les IAs, le tirage aléatoire et la nouvelle fonction Ganon.<br/>
+Nouveautés (Commit):
+Réactivation de Ganon qui suit l'IA qui a le plus de points pour lui retirer 20 rubis. Apparition toutes les 10s. Ajout de la position de ganon sur la carte afin de mieux coder les IAs. Ajout des animations(uniquement animation mais il y a l'entier associé à cette action) du coup d'épée (toutes les directions) et du bouclier (sprite unidirectionnelle mais bloque les coups dans toutes les directions). Ajout du numéro du joueur dans le scoreboard. Simplification, optimisation et création de fonctions pour simplifier la compréhension du code.   
 
 # Contact & Problèmes
 
