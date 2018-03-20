@@ -15,6 +15,7 @@ La **SDL ttf**: <https://www.libsdl.org/projects/SDL_ttf/release-1.2.html><br/>
 La **SDL image**:<https://www.libsdl.org/projects/SDL_image/release-1.2.html><br/>
 La **SDL mixer**:<https://www.libsdl.org/projects/SDL_mixer/release-1.2.html><br/>
 **Lien vers la vidéo qui explique comment télécharger et installer la SDL et le projet:** https://www.youtube.com/watch?v=-KT6cJdJakQ&feature=youtu.be&ab_channel=Chtwin<br/>
+Note: Ajout de tous les fichiers dll de la vidéo dans un dossier téléchargeable.<br/>
 
 # Configuration
 
@@ -23,7 +24,7 @@ version des dossiers** "arène_code" ainsi que du dossier "Images". Une fois les
 le dossier "arène_code"**(Il faut bien inclure les images et non tout le dossier)**. Maintenant que vous avez cela, vous êtes normalement en mesure de lancer le programme.
 **Il faut démarrer prot-jeu et non le main.c pour que le jeu fonctionne**<br/>
 **Pour démarrer le jeu il faut appuyer une fois sur la barre espace**<br/>
-Note: Ajout de tous les fichiers dll de la vidéo dans un dossier téléchargeable.<br/>
+**Si l'arène est coupée sur votre écran vous devez modifier l'affichage de votre ordinateur en suivant ce chemin: Menu Windows<Paramètre<Affichage et passez la résolution à 100%. Le jeu s'affiche maintenant en fullscreen correctement.**<br/>
 
 # Règles du jeu
 **Les XX symbolisent des nombres ou pourcentages pas encore établi, nous décideront des valeurs finales en fonction des premiers tests d'IA**
