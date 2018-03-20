@@ -21,7 +21,9 @@ La **SDL mixer**:<https://www.libsdl.org/projects/SDL_mixer/release-1.2.html><br
 En ce qui concerne la configuration vous aurez besoin d'installer tout ce qui est demandé ci-dessus. Une fois cela installé vous allez devoir télécharger **la dernière
 version des dossiers** "arène_code" ainsi que du dossier "Images". Une fois les dossiers téléchargé, vous allez inclure toutes les images du dossier "Images" dans
 le dossier "arène_code"**(Il faut bien inclure les images et non tout le dossier)**. Maintenant que vous avez cela, vous êtes normalement en mesure de lancer le programme.
+** Il faut démarrer prot-jeu et non le main.c pour que le jeu fonctionne**<br/>
 **Pour démarrer le jeu il faut appuyer une fois sur la barre espace**<br/>
+Note: Ajout de tous les fichiers dll de la vidéo dans un dossier téléchargeable.<br/>
 
 # Règles du jeu
 **Les XX symbolisent des nombres ou pourcentages pas encore établi, nous décideront des valeurs finales en fonction des premiers tests d'IA**
@@ -34,7 +36,7 @@ Les règles restent fondamentalement les mêmes mise à part celles-ci:<br/>
 - Les dégats de Ganon et les temps d'apparitions seront différents du 1vs1.<br/>
 
 # Développement d'IA
-
+** Il y aura plus d'informations très prochainement**<br/>
 En terme d'informations, les IAs connaitront les positions de tous les items et IAs.<br/>
 Les actions possibles citées ci-dessus sont: se déplacer, frapper, parer, utiliser un item.<br/>
 Vous aurez davantage d'informations très prochainement.<br/>
