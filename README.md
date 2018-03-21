@@ -39,14 +39,30 @@ Les règles restent fondamentalement les mêmes mise à part celles-ci:<br/>
 # Développement d'IA
 **Il y aura plus d'informations très prochainement**<br/>
 En terme d'informations, les IAs connaitront les positions de tous les items et IAs.<br/>
-Les actions possibles citées ci-dessus sont: se déplacer, frapper, parer, utiliser un item.<br/>
-Vous aurez davantage d'informations très prochainement.<br/>
-Vous pouvez désormais déplacer l'IA à l'aide de la fonction **test_ia** contenu dans le header. Vous disposez d'un tableau contenant la position des rubis ainsi que celle des IAs. De plus, vous disposez des stats de toutes les IAs de l'arène. La beta du scoreboard vous indique le nombre de rubis de chaque IA à l'écran.<br/>
-Nous travaillons sur l'ajout du multi fonction pour les IAs, le tirage aléatoire et la nouvelle fonction Ganon.<br/>
-Nouveautés (Commit):
-Réactivation de Ganon qui suit l'IA qui a le plus de points pour lui retirer 20 rubis. Apparition toutes les 10s. Ajout de la position de ganon sur la carte afin de mieux coder les IAs. Ajout des animations(uniquement animation mais il y a l'entier associé à cette action) du coup d'épée (toutes les directions) et du bouclier (sprite unidirectionnelle mais bloque les coups dans toutes les directions). Ajout du numéro du joueur dans le scoreboard. Simplification, optimisation et création de fonctions pour simplifier la compréhension du code.<br/>
+Les actions possibles citées ci-dessus sont: se déplacer, frapper, parer, poser une bombe.<br/>
 
-## Interdictions 
+## Options lors d'un tour.
+Lors de votre tour vous pouvez réaliser une de ces actions, vous déplacer dans les 4 directions(haut, bas, gauche, droite), donner un coup d'épée dans la direction dans laquelle regarde votre personnage (ce qui permet de mettre des dégâts à une autre IA ou bien de casser un pot), parer un coup si une IA tente de vous assener un coup ou bien si vous êtes dans l'explosion d'une bombe(vous pouvez parer un nombre limité de fois dans la partie), poser une bombe qui explosera au bout d'un certain temps dans un rayon prédéfini.<br/>
+Voici la liste de ce qui est opérationnel: <br/>
+- La carte de l'arène 					   : Fonctionnel.
+- Données de votre IA (et des autres?)	   : Fonctionnel. (Partiellement fonctionnel?)
+- Déplacements (haut, bas, gauche, droite) : Fonctionnel.
+- frapper                                  : Entier disponible avec l'animation.<br/>
+- parer                                    : Entier disponible avec l'animation.<br/>
+- poser une bombe						   : Entier disponible.<br/>
+- Ganon (IA du jeu)						   : Fonctionnel.<br/>
+
+## Coder l'IA
+
+**Une partie du code utilise un sytème de timer mais à terme cela sera remplacé par un système de tour**<br/> 
+Vous devez coder votre IA dans la fonction **ia_1** et elle doit retourner un entier en respcectant les interdictions indiqués en dessous. Cette fonction se trouve à la fin du header. La fonction **ia_2** vous permet de coder l'IA contre laquelle votre IA se battera. **Dans le header vous pouvez modifier le define NB_PLAYER comme vous le souhaitez, vous pouvez mettre autant de joueurs que vous voulez. En réalité, en modifiant ce fichier vous aller ajouter plein D'IA disposant du code de la fonction ia_2 donc garder ia_1 pour votre véritable IA**.<br/>
+Pour coder, vous disposerez de la carte avec la position de tous les items et personnages. De plus, vous disposez actuellment de vos statistiques, mais à terme vous disposerez probablement des statistiques de toutes les IAs.<br/>
+
+### Modifications temporaires
+
+Pour coder vos IAs le code propose des choses qui ne seront pas dans le code final ou bien qui sont modifiés pour faciliter le codage. Par exemple: Ganon attaque toutes les 15 secondes, les rubis apparaissent toutes les 10 secondes. Un tableau des scores très mal fait juste histoire de voir les scores.<br/>
+
+### Interdictions 
 
 **Voici la liste des choses interdites lors de la réalisation de votre IA (cette liste peut évoluer). Si lors ce que vous rendez le code de votre IA une de ces interdictions est transgressée, votre équipe sera automatiquement éliminée!**<br/>
 - Utiliser la SDL dans votre IA.<br/>
