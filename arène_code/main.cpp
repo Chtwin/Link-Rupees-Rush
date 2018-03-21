@@ -85,11 +85,11 @@ Fonction qui lance le jeu:
 */
 int play (SDL_Surface* screen)
 {
-    int i = 0, continuer = 1, j = 0, time = 0, lastTime = 0, stime = 0, mtime = 0, points = 0;
+    int i = 0, continuer = 1, j = 0, time = 0, lastTime = 0, stime = 0, mtime = 0, points = 0, tours = 0;
     Mix_AllocateChannels(4);
     char temps[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     char score[6] = {0,0,0,0,0,0};
-    int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR];
+    int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], maps_ia[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR];
     for (i=0;i<NB_BLOCS_LARGEUR;i++)
     {
         for (j=0;j<NB_BLOCS_HAUTEUR;j++)
@@ -114,7 +114,7 @@ int play (SDL_Surface* screen)
     background = IMG_Load("arene_beta_13.bmp");
     scoreboard = IMG_Load("scoreboard.bmp");
     setup_pictures(link, rupees,ganon, zelda, guard, skull,daruina,granma,koume,maple,oldman,nayru,saria,sheik,ruto,rauru);
-    setup_map(maps);
+    //setup_map(maps);
     linkNow = link[DOWN];
     police = TTF_OpenFont("triforce.ttf", 35);
     police2 = TTF_OpenFont("triforce.ttf", 15);
@@ -126,107 +126,129 @@ int play (SDL_Surface* screen)
     s_degat = Mix_LoadWAV("degat.wav");
     Mix_VolumeMusic(VOLUME);
     Mix_PlayMusic(gerudo, -1);
-    Player links[26];
+    Player links[NB_PLAYER];
     setup_ia(maps, links);
     ganonNow = ganon[DOWN];
+    int (*ias[NB_PLAYER])(int[][NB_BLOCS_HAUTEUR], int, int, int, int, int, int, int);
+    ias[0] = ia_1;
+    ias[1] = ia_2;
+    if (NB_PLAYER>2)
+    {
+        for (i=2;i<NB_PLAYER;i++)
+        {
+            ias[i] = ia_2;
+        }
+    }
     while (continuer)
     {
         SDL_BlitSurface(background, NULL, screen, &positionBackground);
         SDL_BlitSurface(scoreboard, NULL, screen, &positionScoreboard);
-        for (i=0;i<26;i++)
+        tours++;
+        for (i=0;i<NB_PLAYER;i++)
         {
-            links[i].bouclier = false;
-            position.x =links[i].x;
-            position.y =links[i].y;
-            SDL_PollEvent(&event);  ///SDL_WaitEvent
-            switch(event.type)
+            if (links[i].classement == -1)
             {
-                case SDL_QUIT:
-                    continuer = 0;
-                    break;
-                case SDL_KEYDOWN:
-                    if(event.key.keysym.sym == SDLK_ESCAPE)
-                    {
+                links[i].bouclier = false;
+                position.x =links[i].x;
+                position.y =links[i].y;
+                SDL_PollEvent(&event);  ///SDL_WaitEvent
+                switch(event.type)
+                {
+                    case SDL_QUIT:
                         continuer = 0;
-                    }
-                    break;
-                default:
-                    switch(test_ia(maps, links[i].x, links[i].y, links[i].points, links[i].item, links[i].bouclier, links[i].orientation))
-                    {
-                        case HAUT:
-                            linkNow = link[UP];
-                            links[i].orientation = UP;
-                            links[i].points += movePlayer(maps, &position, UP, s_ruppes);
-                            break;
-                        case BAS:
-                            linkNow = link[DOWN];
-                            links[i].orientation = DOWN;
-                            links[i].points += movePlayer(maps, &position, DOWN, s_ruppes);
-                            break;
-                        case DROITE:
-                            linkNow = link[RIGHT];
-                            links[i].orientation = RIGHT;
-                            links[i].points += movePlayer(maps, &position, RIGHT, s_ruppes);
-                            break;
-                        case GAUCHE:
-                            linkNow = link[LEFT];
-                            links[i].orientation = LEFT;
-                            links[i].points += movePlayer(maps, &position, LEFT, s_ruppes);
-                            break;
-                         case EPEE:
-                            switch (links[i].orientation)
-                            {
-                                case UP:
-                                    linkNow = link[HIT_UP];
-                                    break;
-                                case DOWN:
-                                    linkNow = link[HIT_DOWN];
-                                    break;
-                                case RIGHT:
-                                    linkNow = link[HIT_RIGHT];
-                                    break;
-                                case LEFT:
-                                    linkNow = link[HIT_LEFT];
-                                    break;
-                            }
-                            damage(maps, links, i);
-                            //Mix_PlayChannel(1, s_sword, 0);
-                            break;
-                        case PARER:
-                            linkNow = link[SHIELD];
-                            links[i].bouclier = true;
-                            break;
-                    }
-                    break;
+                        break;
+                    case SDL_KEYDOWN:
+                        if(event.key.keysym.sym == SDLK_ESCAPE)
+                        {
+                            continuer = 0;
+                        }
+                        break;
+                    default:
+                        switch(ias[i](maps_ia, links[i].x, links[i].y, links[i].points, links[i].item, links[i].bouclier, links[i].orientation, tours))
+                        {
+                            case HAUT:
+                                linkNow = link[UP];
+                                links[i].orientation = UP;
+                                links[i].points += movePlayer(maps, &position, UP, s_ruppes);
+                                break;
+                            case BAS:
+                                linkNow = link[DOWN];
+                                links[i].orientation = DOWN;
+                                links[i].points += movePlayer(maps, &position, DOWN, s_ruppes);
+                                break;
+                            case DROITE:
+                                linkNow = link[RIGHT];
+                                links[i].orientation = RIGHT;
+                                links[i].points += movePlayer(maps, &position, RIGHT, s_ruppes);
+                                break;
+                            case GAUCHE:
+                                linkNow = link[LEFT];
+                                links[i].orientation = LEFT;
+                                links[i].points += movePlayer(maps, &position, LEFT, s_ruppes);
+                                break;
+                             case EPEE:
+                                switch (links[i].orientation)
+                                {
+                                    case UP:
+                                        linkNow = link[HIT_UP];
+                                        break;
+                                    case DOWN:
+                                        linkNow = link[HIT_DOWN];
+                                        break;
+                                    case RIGHT:
+                                        linkNow = link[HIT_RIGHT];
+                                        break;
+                                    case LEFT:
+                                        linkNow = link[HIT_LEFT];
+                                        break;
+                                }
+                                damage(maps, links, i);
+                                //Mix_PlayChannel(1, s_sword, 0);
+                                break;
+                            case PARER:
+                                linkNow = link[SHIELD];
+                                links[i].bouclier = true;
+                                break;
+                            case BOMBE:
+                                break;
+                        }
+                        break;
+                }
+                links[i].x = position.x;
+                links[i].y = position.y;
+                position.x*= TAILLE_BLOC;
+                position.y*= TAILLE_BLOC;
+                maps[links[i].x][links[i].y] = IA;
+                SDL_BlitSurface(linkNow, NULL, screen, &position);
+                ///
+                position.x = 1400;
+                position.y = 150 + i*25;
+                SDL_BlitSurface(rupees[GREEN_RUPEE], NULL, screen, &position);
+                p_points = TTF_RenderText_Blended(police2, score, couleurJaune);
+                position.x = 1425;
+                position.y = 155 + i*25;
+                if (points < 10)
+                {
+                    sprintf(score, "X 00%d\tJ%d",links[i].points, i+1);
+                }
+                else if (points < 100)
+                {
+                    sprintf(score, "X 0%d\tJ%d",links[i].points,i+1);
+                }
+                else
+                {
+                    sprintf(score, "X %d\tJ%d",links[i].points,i+1);
+                }
+                p_points = TTF_RenderText_Blended(police2, score, couleurJaune);
+                SDL_BlitSurface(p_points, NULL, screen, &position);
             }
-            links[i].x = position.x;
-            links[i].y = position.y;
-            position.x*= TAILLE_BLOC;
-            position.y*= TAILLE_BLOC;
-            maps[links[i].x][links[i].y] = IA;
-            SDL_BlitSurface(linkNow, NULL, screen, &position);
-            ///
-            position.x = 1400;
-            position.y = 150 + i*25;
-            SDL_BlitSurface(rupees[GREEN_RUPEE], NULL, screen, &position);
-            p_points = TTF_RenderText_Blended(police2, score, couleurJaune);
-            position.x = 1425;
-            position.y = 155 + i*25;
-            if (points < 10)
-            {
-                sprintf(score, "X 00%d\tJ%d",links[i].points, i+1);
-            }
-            else if (points < 100)
-            {
-                sprintf(score, "X 0%d\tJ%d",links[i].points,i+1);
-            }
-            else
-            {
-                sprintf(score, "X %d\tJ%d",links[i].points,i+1);
-            }
-            p_points = TTF_RenderText_Blended(police2, score, couleurJaune);
-            SDL_BlitSurface(p_points, NULL, screen, &position);
+
         }
+        sprintf(score, "%s %d","Tours:",tours);
+        p_points = TTF_RenderText_Blended(police, score, couleurNoire);
+        position.x = 1025;
+        position.y = 30;
+        SDL_BlitSurface(p_points, NULL, screen, &position);
         time = SDL_GetTicks();
         if (time - lastTime >= 1000)
         {
@@ -236,21 +258,32 @@ int play (SDL_Surface* screen)
                 mtime++;
                 stime = 0;
             }
+            if (stime%10 == 0)
+            {
+                setup_map(maps);
+            }
             lastTime = time;
         }
         timer(temps,score,time,lastTime,stime,mtime,points);
         texte = TTF_RenderText_Blended(police, temps, couleurNoire);
-        ganon_move(maps, s_degat , links, &position); // Désactivation provisoire de ganon pour une fonte total de cette IA
+        blit_items(maps,screen,rupees);
+        ganon_move(maps, s_degat , links, &position);
         SDL_BlitSurface(ganonNow, NULL, screen, &position);
         animation(screen, zelda, skull,daruina,granma,koume,maple,oldman,nayru,saria,sheik,ruto,rauru);
-        blit_items(maps,screen,rupees);
         position.x = 70;
         position.y = 25; //30
         SDL_BlitSurface(texte, NULL, screen, &position);
         //SDL_BlitSurface(ganonNow, NULL, screen, &position);
         garde(screen,guard);
         SDL_Flip(screen);
-        continuer = win(points, screen, gerudo, continuer);
+        for (i=0;i<NB_BLOCS_LARGEUR;i++)
+        {
+            for(j=0;j<NB_BLOCS_HAUTEUR;j++)
+            {
+                maps_ia[i][j]= maps[i][j];
+            }
+        }
+        continuer = win(test_class(maps, links), screen, gerudo, links, continuer);
     }
     SDL_FreeSurface(wall);
     SDL_FreeSurface(texte);
@@ -258,14 +291,14 @@ int play (SDL_Surface* screen)
     SDL_FreeSurface(vide);
     Mix_FreeChunk(s_sword);
     Mix_FreeChunk(s_ruppes);
-    for (i = 0 ; i < 20 ; i++)
+    for (i = 0 ; i < 21 ; i++)
     {
         SDL_FreeSurface(link[i]);
     }
     TTF_CloseFont(police);
     TTF_Quit();
     Mix_PauseMusic();
-    return 1;
+    return 0;
 }
 
 /*
@@ -274,11 +307,11 @@ Fonction qui initialise la carte avec les rubis et les cases vides.
 void setup_map (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR])
 {
     int i,j, nb = 0;
-    for (i = MINX; i < MAXX ; i++)
+    for (i = MINX - 1; i < MAXX - 1 ; i++)
     {
         for (j = MINY; j < MAXY ; j++)
         {
-            nb = rand()%600;
+            nb = rand()%800;
             switch (nb)
             {
                 case 5:
@@ -290,9 +323,6 @@ void setup_map (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR])
                 case 4:
                     maps[i][j]= RED_RUPEE;
                     break;
-                default:
-                    maps[i][j]= VIDE;
-                    break;
             }
         }
     }
@@ -301,12 +331,13 @@ void setup_map (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR])
 /*
 Fonction qui initialise les paramètres des IAs.
 */
-void setup_ia(int maps[][NB_BLOCS_HAUTEUR], Player links[26])
+void setup_ia(int maps[][NB_BLOCS_HAUTEUR], Player links[NB_PLAYER])
 {
     int i;
-    for (i=0;i<26;i++)
+    for (i=0;i<NB_PLAYER;i++)
     {
         links[i].points = 20;
+        links[i].classement = -1;
         links[i].x = 20 + rand()%80;
         links[i].y = 30 + rand()%40;
         maps[links[i].x][links[i].y] = links[i].points;
@@ -396,13 +427,13 @@ int movePlayer (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *position
 
         (*currentCase) = VIDE;
 
-        //Mix_PlayChannel(1, s_ruppes, 0);  Désactivation du son des rubis à cause d'un bug;
+        //Mix_PlayChannel(1, s_ruppes, 0); // Désactivation du son des rubis à cause d'un bug;
     }
 
     return bonus;
 }
 
-void damage(int maps[][NB_BLOCS_HAUTEUR], Player links[26], int playernow)
+void damage(int maps[][NB_BLOCS_HAUTEUR], Player links[NB_PLAYER], int playernow)
 {
 
 }
@@ -410,20 +441,19 @@ void damage(int maps[][NB_BLOCS_HAUTEUR], Player links[26], int playernow)
 /*
 Fonction qui permet à Ganon de se déplacer.
 */
-void ganon_move(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], Mix_Chunk *s_degat, Player links[26], SDL_Rect *position)
+void ganon_move(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], Mix_Chunk *s_degat, Player links[NB_PLAYER], SDL_Rect *position)
 {
-    int i = 0, j = 0;
-    int *aroundCase[4], *currentCase = NULL;
+    int i = 0;
     static int research = 1;
     static int bestlink = 0;
     static int ganonx = LARGEUR_FENETRE / 2 - 50;
     static int ganony = HAUTEUR_FENETRE / 2;
-    static int delay = 10000;
+    static int delay = 15000;
     if (SDL_GetTicks()> delay)
     {
         if (research == 1)
         {
-            for(i=1;i<26;i++)
+            for(i=0;i<NB_PLAYER;i++)
             {
                 if(links[bestlink].points < links[i].points)
                 {
@@ -483,7 +513,7 @@ void ganon_move(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], Mix_Chunk *s_degat
         decaly = ganony - y;
         if (decalx == 0 && decaly == 0)
         {
-            links[bestlink].points -= 20;
+            links[bestlink].points -= 50;
             ganonx = LARGEUR_FENETRE / 2 - 50;
             ganony = HAUTEUR_FENETRE / 2 ;
             research = 1;
@@ -495,16 +525,51 @@ void ganon_move(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], Mix_Chunk *s_degat
     position->y = ganony;
     maps[ganonx/TAILLE_BLOC][ganony/TAILLE_BLOC] = GANON;
 }
+/*
+Fonction qui classe les joueurs.
+*/
+bool test_class(int maps[][NB_BLOCS_HAUTEUR], Player links[NB_PLAYER])
+{
+    int i = 0;
+    static int num = NB_PLAYER;
+    for(i=0;i<NB_PLAYER;i++)
+    {
+        if (links[i].points <= 0 && links[i].classement == -1)
+        {
+            links[i].classement = num;
+            maps[links[i].x][links[i].y] = VIDE;
+            num-=1;
+        }
+    }
+    if (num == 1)
+    {
+        for(i=0;i<NB_PLAYER;i++)
+        {
+            if (links[i].classement == -1)
+            {
+                links[i].classement = 1;
+            }
+            else if (links[i].points < 0)
+            {
+                links[i].points = 0;
+            }
+        }
+        return true;
+    }
+    return false;
+}
 
 /*
 Fonction qui détérmine quand il y a un vainqeur.
 */
-int win(int points, SDL_Surface* screen, Mix_Music *gerudo, int continuer)
+int win(bool survivant, SDL_Surface* screen, Mix_Music *gerudo, Player links[NB_PLAYER], int continuer)
 {
-    if (points > 99)
+    if (survivant == true)
     {
+
+        int i;
         Mix_PauseMusic();
-        char winner[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+        char winner[35] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
         TTF_Font *police = NULL;
         police = TTF_OpenFont("triforce.ttf", 45);
         SDL_Color couleurJaune = {255, 255, 0};
@@ -516,53 +581,22 @@ int win(int points, SDL_Surface* screen, Mix_Music *gerudo, int continuer)
         position.x = 110;
         position.y = 110;
         background = IMG_Load("score.bmp");
-        sprintf(winner, "Link gagne avec %d",points);
+        SDL_BlitSurface(background, NULL, screen, &positionBackground);
+        sprintf(winner, "Classement:");
         texte = TTF_RenderText_Blended(police, winner, couleurJaune);
-        while (continuer)
+        SDL_BlitSurface(texte, NULL, screen, &position);
+        for(i=0;i<NB_PLAYER;i++)
         {
-            SDL_PollEvent(&event);
-            switch(event.type)
-            {
-                case SDL_QUIT:
-                    continuer = 0;
-                    break;
-                case SDL_KEYDOWN:
-                    if (event.key.keysym.sym == SDLK_ESCAPE)
-                    {
-                        Mix_PauseMusic();
-                        continuer = 0;
-                        return 0;
-                    }
-            }
-            SDL_BlitSurface(background, NULL, screen, &positionBackground);
+            position.x = 150;
+            position.y = 180 + 70*i;
+            sprintf(winner, "J%d a %d points et est a la %d position",i+1,links[i].points,links[i].classement);
+            texte = TTF_RenderText_Blended(police, winner, couleurJaune);
             SDL_BlitSurface(texte, NULL, screen, &position);
-            SDL_Flip(screen);
         }
-    }
-    else if (points < 0)
-    {
-        Mix_PauseMusic();
-        Mix_FreeMusic(gerudo);
-        Mix_Chunk *over;
-        SDL_Delay(100);
-        over = Mix_LoadWAV("game_overv2.wav");
-        Mix_PlayChannel(2, over, 0);
-        int continuer = 1;
-        TTF_Font *police = NULL;
-        police = TTF_OpenFont("triforce.ttf", 120);
-        SDL_Color couleurJaune = {255, 255, 0};
-        SDL_Surface *background = NULL, *texte = NULL;
-        SDL_Rect positionBackground, position;
-        SDL_Event event;
-        positionBackground.x = 0;
-        positionBackground.y = 0;
-        position.x = LARGEUR_FENETRE / 2 - 200;
-        position.y = HAUTEUR_FENETRE / 2;
-        background = IMG_Load("score.bmp");
-        texte = TTF_RenderText_Blended(police, "Link a perdu", couleurJaune);
+        SDL_Flip(screen);
         while (continuer)
         {
-            SDL_PollEvent(&event);
+            SDL_WaitEvent(&event);
             switch(event.type)
             {
                 case SDL_QUIT:
@@ -576,9 +610,6 @@ int win(int points, SDL_Surface* screen, Mix_Music *gerudo, int continuer)
                         return 0;
                     }
             }
-            SDL_BlitSurface(background, NULL, screen, &positionBackground);
-            SDL_BlitSurface(texte, NULL, screen, &position);
-            SDL_Flip(screen);
         }
     }
     return continuer;
@@ -718,7 +749,7 @@ void setup_pictures (SDL_Surface *link[21],SDL_Surface *rupees[3],SDL_Surface *g
     //link[DOWN_ANIM] = IMG_Load("link_down_floor.bmp");
     //SDL_SetColorKey(link[DOWN_ANIM], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
     ///
-    rupees[GREEN_RUPEE] = IMG_Load("green_rupee.bmp");
+    rupees[GREEN_RUPEE] = IMG_Load("green_rupee1.bmp");
     SDL_SetColorKey(rupees[GREEN_RUPEE], SDL_SRCCOLORKEY, SDL_MapRGB((*rupees)->format, 0, 0, 255));
     rupees[BLUE_RUPEE] = IMG_Load("blue_rupee.bmp");
     SDL_SetColorKey(rupees[BLUE_RUPEE], SDL_SRCCOLORKEY, SDL_MapRGB((*rupees)->format, 0, 0, 255));
