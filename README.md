@@ -44,7 +44,14 @@ Vous aurez davantage d'informations très prochainement.<br/>
 Vous pouvez désormais déplacer l'IA à l'aide de la fonction **test_ia** contenu dans le header. Vous disposez d'un tableau contenant la position des rubis ainsi que celle des IAs. De plus, vous disposez des stats de toutes les IAs de l'arène. La beta du scoreboard vous indique le nombre de rubis de chaque IA à l'écran.<br/>
 Nous travaillons sur l'ajout du multi fonction pour les IAs, le tirage aléatoire et la nouvelle fonction Ganon.<br/>
 Nouveautés (Commit):
-Réactivation de Ganon qui suit l'IA qui a le plus de points pour lui retirer 20 rubis. Apparition toutes les 10s. Ajout de la position de ganon sur la carte afin de mieux coder les IAs. Ajout des animations(uniquement animation mais il y a l'entier associé à cette action) du coup d'épée (toutes les directions) et du bouclier (sprite unidirectionnelle mais bloque les coups dans toutes les directions). Ajout du numéro du joueur dans le scoreboard. Simplification, optimisation et création de fonctions pour simplifier la compréhension du code.   
+Réactivation de Ganon qui suit l'IA qui a le plus de points pour lui retirer 20 rubis. Apparition toutes les 10s. Ajout de la position de ganon sur la carte afin de mieux coder les IAs. Ajout des animations(uniquement animation mais il y a l'entier associé à cette action) du coup d'épée (toutes les directions) et du bouclier (sprite unidirectionnelle mais bloque les coups dans toutes les directions). Ajout du numéro du joueur dans le scoreboard. Simplification, optimisation et création de fonctions pour simplifier la compréhension du code.<br/>
+
+## Interdictions 
+
+**Voici la liste des choses interdites lors de la réalisation de votre IA (cette liste peut évoluer). Si lors ce que vous rendez le code de votre IA une de ces interdictions est transgressée, votre équipe sera automatiquement éliminée!**<br/>
+- Utiliser la SDL dans votre IA.<br/>
+- Coder totalement ou partiellement votre IA en assembleur.<br/>
+- Avoir une partie du code qui fait planter le programme (ex: une boucle infini)<br/>
 
 # Contact & Problèmes
 
