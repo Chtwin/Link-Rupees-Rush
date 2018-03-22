@@ -258,23 +258,23 @@ int play (SDL_Surface* screen)
                 mtime++;
                 stime = 0;
             }
-            if (stime%10 == 0)
-            {
-                setup_map(maps);
-            }
             lastTime = time;
+        }
+        if (tours%120==0)
+        {
+            setup_map(maps);
         }
         timer(temps,score,time,lastTime,stime,mtime,points);
         texte = TTF_RenderText_Blended(police, temps, couleurNoire);
         blit_items(maps,screen,rupees);
-        ganon_move(maps, s_degat , links, &position);
+        ganon_move(maps, s_degat , links, &position, tours);
         SDL_BlitSurface(ganonNow, NULL, screen, &position);
-        animation(screen, zelda, skull,daruina,granma,koume,maple,oldman,nayru,saria,sheik,ruto,rauru);
+        animation(screen, zelda, skull,daruina,granma,koume,maple,oldman,nayru,saria,sheik,ruto,rauru,tours);
         position.x = 70;
         position.y = 25; //30
         SDL_BlitSurface(texte, NULL, screen, &position);
         //SDL_BlitSurface(ganonNow, NULL, screen, &position);
-        garde(screen,guard);
+        garde(screen,guard, tours);
         SDL_Flip(screen);
         for (i=0;i<NB_BLOCS_LARGEUR;i++)
         {
@@ -441,15 +441,15 @@ void damage(int maps[][NB_BLOCS_HAUTEUR], Player links[NB_PLAYER], int playernow
 /*
 Fonction qui permet à Ganon de se déplacer.
 */
-void ganon_move(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], Mix_Chunk *s_degat, Player links[NB_PLAYER], SDL_Rect *position)
+void ganon_move(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], Mix_Chunk *s_degat, Player links[NB_PLAYER], SDL_Rect *position, int tours)
 {
     int i = 0;
     static int research = 1;
     static int bestlink = 0;
     static int ganonx = LARGEUR_FENETRE / 2 - 50;
     static int ganony = HAUTEUR_FENETRE / 2;
-    static int delay = 15000;
-    if (SDL_GetTicks()> delay)
+    static int delay = 160;
+    if (tours > delay)
     {
         if (research == 1)
         {
@@ -513,12 +513,12 @@ void ganon_move(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], Mix_Chunk *s_degat
         decaly = ganony - y;
         if (decalx == 0 && decaly == 0)
         {
-            links[bestlink].points -= 50;
+            links[bestlink].points -= 30;
             ganonx = LARGEUR_FENETRE / 2 - 50;
             ganony = HAUTEUR_FENETRE / 2 ;
             research = 1;
             Mix_PlayChannel(2, s_degat, 0);
-            delay = SDL_GetTicks() + 10000;
+            delay = tours + 160;
         }
     }
     position->x = ganonx;
@@ -618,7 +618,7 @@ int win(bool survivant, SDL_Surface* screen, Mix_Music *gerudo, Player links[NB_
 /*
 Fonction qui gère les déplacements des pnjs.
 */
-void animation(SDL_Surface* screen, SDL_Surface *zelda[6], SDL_Surface *skull[4],SDL_Surface *daruina[4],SDL_Surface *granma[4],SDL_Surface *koume[4],SDL_Surface *maple [4],SDL_Surface *oldman[4],SDL_Surface *nayru[4],SDL_Surface *saria[4],SDL_Surface *sheik[4], SDL_Surface *ruto[4], SDL_Surface *rauru[4])
+void animation(SDL_Surface* screen, SDL_Surface *zelda[6], SDL_Surface *skull[4],SDL_Surface *daruina[4],SDL_Surface *granma[4],SDL_Surface *koume[4],SDL_Surface *maple [4],SDL_Surface *oldman[4],SDL_Surface *nayru[4],SDL_Surface *saria[4],SDL_Surface *sheik[4], SDL_Surface *ruto[4], SDL_Surface *rauru[4], int tours)
 {
     static int tour = 0;
     SDL_Rect pnj[16];
@@ -657,7 +657,7 @@ void animation(SDL_Surface* screen, SDL_Surface *zelda[6], SDL_Surface *skull[4]
         x1 = 60;
         y2 = 387;
     }
-    if (SDL_GetTicks()%20==0)
+    if (tours%15==0)
     {
         tour++;
     }
@@ -667,7 +667,7 @@ void animation(SDL_Surface* screen, SDL_Surface *zelda[6], SDL_Surface *skull[4]
 /*
 Fonction qui permet aux pnjs gardes de patrouiller autour de l'arène.
 */
-void garde(SDL_Surface* screen, SDL_Surface *guard[16])
+void garde(SDL_Surface* screen, SDL_Surface *guard[16], int tours)
 {
     static int tour = ANIM_DOWN1;
     static int y = 5;
@@ -683,7 +683,7 @@ void garde(SDL_Surface* screen, SDL_Surface *guard[16])
         positionGarde.y = y;
     }
     SDL_BlitSurface(guard[tour], NULL, screen, &positionGarde);
-    if (SDL_GetTicks()%5==0)
+    if (tours%4==0)
     {
         if (tour%ANIM_DOWN3==0)
         {
