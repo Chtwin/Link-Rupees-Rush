@@ -36,6 +36,10 @@ Les règles restent fondamentalement les mêmes mise à part celles-ci:<br/>
 - Les rubis et pots vont apparaître dans toute l'arène.<br/>
 - Les dégats de Ganon et les temps d'apparitions seront différents du 1vs1.<br/>
 
+## Sondages
+
+Vous pouvez maintenant choisir comment le jeu évoluera sur certains aspects! pour cela il vous suffit de vous rendre sur ce lien: https://docs.google.com/document/d/1_-hLKn6_rfkCmUssCuAujtt3TShWTMhPbLPiDf3e9Js/edit?usp=sharing<br/>
+
 # Développement d'IA
 **Il y aura plus d'informations très prochainement**<br/>
 En terme d'informations, les IAs connaitront les positions de tous les items et IAs.<br/>
