@@ -1,3 +1,8 @@
+# Tuto SDL pour les utilisateurs de MAC
+
+**Voici un tutoriel qui explique comment insatller la SDL sur Mac ( remerciments à Mme.CHENANE pour le tuto: http://tuto-mac.wixsite.com/tuto-sdl-xcode**<br/>
+
+
 # Link Rupees Rush
 
 Link Rupees Rush est un jeu dans lequel 2 ia ou plus s'affrontent au cours d'un combat acharné. <br/>
