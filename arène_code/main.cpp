@@ -186,25 +186,27 @@ int play (SDL_Surface* screen)
                                 links[i].orientation = LEFT;
                                 links[i].points += movePlayer(maps, &position, LEFT, s_ruppes);
                                 break;
-                             case EPEE:
-                                switch (links[i].orientation)
-                                {
-                                    case UP:
-                                        linkNow = link[HIT_UP];
-                                        break;
-                                    case DOWN:
-                                        linkNow = link[HIT_DOWN];
-                                        break;
-                                    case RIGHT:
-                                        linkNow = link[HIT_RIGHT];
-                                        break;
-                                    case LEFT:
-                                        linkNow = link[HIT_LEFT];
-                                        break;
-                                }
+                            case EPEE_HAUT:
+                                linkNow = link[HIT_UP];
+                                links[i].orientation = UP;
                                 damage(maps, links, i);
-                                //Mix_PlayChannel(1, s_sword, 0);
                                 break;
+                            case EPEE_BAS:
+                                links[i].orientation = DOWN;
+                                linkNow = link[HIT_DOWN];
+                                damage(maps, links, i);
+                                break;
+                            case EPEE_DROITE:
+                                links[i].orientation = RIGHT;
+                                linkNow = link[HIT_RIGHT];
+                                damage(maps, links, i);
+                                break;
+                            case EPEE_GAUCHE:
+                                links[i].orientation = LEFT;
+                                linkNow = link[HIT_LEFT];
+                                damage(maps, links, i);
+                                break;
+                            //Mix_PlayChannel(1, s_sword, 0);
                             case PARER:
                                 linkNow = link[SHIELD];
                                 links[i].bouclier = true;
@@ -337,6 +339,7 @@ void setup_ia(int maps[][NB_BLOCS_HAUTEUR], Player links[NB_PLAYER])
     for (i=0;i<NB_PLAYER;i++)
     {
         links[i].points = 20;
+        links[i].orientation = DOWN;
         links[i].classement = -1;
         links[i].x = 20 + rand()%80;
         links[i].y = 30 + rand()%40;
