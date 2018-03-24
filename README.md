@@ -49,7 +49,7 @@ Vous pouvez maintenant choisir comment le jeu évoluera sur certains aspects! po
 **Il y aura plus d'informations très prochainement**<br/>
 En terme d'informations, les IAs connaitront les positions de tous les items et IAs.<br/>
 Les actions possibles citées ci-dessus sont: se déplacer, frapper, parer, poser une bombe.<br/>
-**Note: Vous êtes zutorisé à utiliser les DEFINE notamment MINY, MAXY,MINX,MAXX, qui représentent les bordures de la cartes.**<br/>
+**Note: Vous êtes autorisé à utiliser les DEFINE notamment MINY, MAXY,MINX,MAXX, qui représentent les bordures de la cartes.**<br/>
 
 ## Options lors d'un tour.
 Lors de votre tour vous pouvez réaliser une de ces actions, vous déplacer dans les 4 directions(haut, bas, gauche, droite), donner un coup d'épée dans la direction dans laquelle regarde votre personnage (ce qui permet de mettre des dégâts à une autre IA ou bien de casser un pot), parer un coup si une IA tente de vous assener un coup ou bien si vous êtes dans l'explosion d'une bombe(vous pouvez parer un nombre limité de fois dans la partie), poser une bombe qui explosera au bout d'un certain temps dans un rayon prédéfini.<br/>
