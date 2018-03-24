@@ -1,7 +1,6 @@
-# Tuto SDL pour les utilisateurs de MAC
+# Nouvautés & Annonces
 
-**Voici un tutoriel qui explique comment insatller la SDL sur Mac (remerciements  à Mme.CHENANE pour le tuto): http://tuto-mac.wixsite.com/tuto-sdl-xcode**<br/>
-
+Vous disposez de quasiment toutes les possibilités pour les IAs, il ne reste que les pots avec la bombe. Si vous trouvez des problèmes au niveau des coups d'épées ou à tout autre niveau, merci de nous le signalez. Vous recevrez un bonus si vous signalez un quelconque problème. Nous essayons de finir les IAs au plus vite, milieu de la semaine prochaine normalement. Pour que vous soyez au courant les IAs seront à rendre aux alentours du 5 avril pour qu'elles soient toutes testées avant 10 Avril. De plus oubliez pas qu'il y a un sondage plus bas qui vous permet de décider su futur du jeu.<br/>
 
 # Link Rupees Rush
 
@@ -20,6 +19,7 @@ La **SDL ttf**: <https://www.libsdl.org/projects/SDL_ttf/release-1.2.html><br/>
 La **SDL image**:<https://www.libsdl.org/projects/SDL_image/release-1.2.html><br/>
 La **SDL mixer**:<https://www.libsdl.org/projects/SDL_mixer/release-1.2.html><br/>
 **Lien vers la vidéo qui explique comment télécharger et installer la SDL et le projet:** https://www.youtube.com/watch?v=-KT6cJdJakQ&feature=youtu.be&ab_channel=Chtwin<br/>
+**Voici un tutoriel qui explique comment insatller la SDL sur Mac (remerciements  à Mme.CHENANE pour le tuto): http://tuto-mac.wixsite.com/tuto-sdl-xcode**<br/>
 Note: Ajout de tous les fichiers dll de la vidéo dans un dossier téléchargeable.<br/>
 
 # Configuration
@@ -54,11 +54,11 @@ Les actions possibles citées ci-dessus sont: se déplacer, frapper, parer, pose
 Lors de votre tour vous pouvez réaliser une de ces actions, vous déplacer dans les 4 directions(haut, bas, gauche, droite), donner un coup d'épée dans la direction dans laquelle regarde votre personnage (ce qui permet de mettre des dégâts à une autre IA ou bien de casser un pot), parer un coup si une IA tente de vous assener un coup ou bien si vous êtes dans l'explosion d'une bombe(vous pouvez parer un nombre limité de fois dans la partie), poser une bombe qui explosera au bout d'un certain temps dans un rayon prédéfini.<br/>
 Voici la liste de ce qui est opérationnel: <br/>
 - La carte de l'arène 					   : Fonctionnel.
-- Données de votre IA (et des autres?)	   : Fonctionnel. (Partiellement fonctionnel?)
+- Données de votre IA (et des autres?)	   : Fonctionnel.
 - Déplacements (haut, bas, gauche, droite) : Fonctionnel.
-- frapper                                  : Entier disponible avec l'animation.<br/>
-- parer                                    : Entier disponible avec l'animation.<br/>
-- poser une bombe						   : Entier disponible.<br/>
+- frapper                                  : Fonctionne mais n'est pas totalement fini(reste des bugs).<br/>
+- parer                                    : Fonctionnel.<br/>
+- poser une bombe						     : Entier disponible.<br/>
 - Ganon (IA du jeu)						   : Fonctionnel.<br/>
 
 ## Coder l'IA
@@ -77,6 +77,9 @@ Pour coder vos IAs le code propose des choses qui ne seront pas dans le code fin
 - Utiliser la SDL dans votre IA.<br/>
 - Coder totalement ou partiellement votre IA en assembleur.<br/>
 - Avoir une partie du code qui fait planter le programme (ex: une boucle infini)<br/>
+- Appeller une fonction<br/>
+- Provoquer des dépassements de mémoires<br/>
+- Modifier la carte qui est en argument pour les IA's<br/>
 
 # Contact & Problèmes
 
