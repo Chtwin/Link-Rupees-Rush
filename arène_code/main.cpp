@@ -68,6 +68,8 @@ int main(int argc, char *argv[])
                     case SDLK_ESCAPE:
                         continuer = 0;
                         break;
+                    default:
+                        break;
                 }
         }
         SDL_BlitSurface(menu, NULL, screen, &positionMenu);
