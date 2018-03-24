@@ -131,7 +131,7 @@ int play (SDL_Surface* screen)
     Player links[NB_PLAYER];
     setup_ia(maps, links);
     ganonNow = ganon[DOWN];
-    int (*ias[NB_PLAYER])(int[][NB_BLOCS_HAUTEUR], int, int, int, int, int, int, int);
+    int (*ias[NB_PLAYER])(int[][NB_BLOCS_HAUTEUR], int, int, int, int, int);
     ias[0] = ia_1;
     ias[1] = ia_2;
     if (NB_PLAYER>2)
@@ -166,7 +166,7 @@ int play (SDL_Surface* screen)
                         }
                         break;
                     default:
-                        switch(ias[i](maps_ia, links[i].x, links[i].y, links[i].points, links[i].item, links[i].bouclier, links[i].orientation, tours))
+                        switch(ias[i](maps_ia, links[i].x, links[i].y, links[i].points, links[i].item, tours))
                         {
                             case HAUT:
                                 linkNow = link[UP];
@@ -224,6 +224,12 @@ int play (SDL_Surface* screen)
                 position.y*= TAILLE_BLOC;
                 maps[links[i].x][links[i].y] = IA;
                 SDL_BlitSurface(linkNow, NULL, screen, &position);
+                ///
+                position.y -= 25 ;
+                position.x += 4;
+                sprintf(score, "J%d",i+1);
+                p_points = TTF_RenderText_Blended(police2, score, couleurJaune);
+                SDL_BlitSurface(p_points, NULL, screen, &position);
                 ///
                 position.x = 1400;
                 position.y = 150 + i*25;
@@ -287,7 +293,7 @@ int play (SDL_Surface* screen)
                 maps_ia[i][j]= maps[i][j];
             }
         }
-        continuer = win(test_class(maps, links), screen, gerudo, links, continuer);
+        continuer = win(test_class(maps, links), screen, gerudo, links, continuer, tours);
     }
     SDL_FreeSurface(wall);
     SDL_FreeSurface(texte);
@@ -295,11 +301,32 @@ int play (SDL_Surface* screen)
     SDL_FreeSurface(vide);
     Mix_FreeChunk(s_sword);
     Mix_FreeChunk(s_ruppes);
+    SDL_FreeSurface(*saria);
+    SDL_FreeSurface(*nayru);
+    SDL_FreeSurface(*oldman);
+    SDL_FreeSurface(*maple);
+    SDL_FreeSurface(*koume);
+    SDL_FreeSurface(*granma);
+    SDL_FreeSurface(*daruina);
+    SDL_FreeSurface(*skull);
+    SDL_FreeSurface(*guard);
+    SDL_FreeSurface(*link);
+    SDL_FreeSurface(*rupees);
+    SDL_FreeSurface(*zelda);
+    SDL_FreeSurface(*ganon);
+    SDL_FreeSurface(vide);
+    SDL_FreeSurface(linkNow);
+    SDL_FreeSurface(background);
+    SDL_FreeSurface(scoreboard);
+    SDL_FreeSurface(texte);
+    SDL_FreeSurface(p_points);
+    SDL_FreeSurface(ganonNow);
     for (i = 0 ; i < 21 ; i++)
     {
         SDL_FreeSurface(link[i]);
     }
     TTF_CloseFont(police);
+    TTF_CloseFont(police2);
     TTF_Quit();
     Mix_PauseMusic();
     return 0;
@@ -311,11 +338,11 @@ Fonction qui initialise la carte avec les rubis et les cases vides.
 void setup_map (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR])
 {
     int i,j, nb = 0;
-    for (i = MINX - 1; i < MAXX - 1 ; i++)
+    for (i = MINX + 14; i < MAXX - 14 ; i++)
     {
-        for (j = MINY; j < MAXY ; j++)
+        for (j = MINY + 8; j < MAXY - 8 ; j++)
         {
-            nb = rand()%800;
+            nb = rand()%300;
             switch (nb)
             {
                 case 5:
@@ -340,7 +367,7 @@ void setup_ia(int maps[][NB_BLOCS_HAUTEUR], Player links[NB_PLAYER])
     int i;
     for (i=0;i<NB_PLAYER;i++)
     {
-        links[i].points = 20;
+        links[i].points = 30;
         links[i].orientation = DOWN;
         links[i].classement = -1;
         links[i].x = 20 + rand()%80;
@@ -440,7 +467,49 @@ int movePlayer (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *position
 
 void damage(int maps[][NB_BLOCS_HAUTEUR], Player links[NB_PLAYER], int playernow)
 {
-
+    int j=0;
+    switch (links[playernow].orientation)
+    {
+        case UP :
+            for (j=0; j<NB_PLAYER; j++)
+            {
+                if(links[playernow].x - 1 < links[j].x && links[j].x < links[playernow].x  && links[playernow].y   > links[j].y && links[j].y > links[playernow].y - 3 && j != playernow && links[j].classement == -1 && links[j].bouclier != true)
+                {
+                    links[j].points -= DEGAT_EPEE;
+                    links[playernow].points += RECUP_RUBIS;
+                }
+            }
+            break;
+        case DOWN :
+            for (j=0; j<NB_PLAYER; j++)
+            {
+                if(j != playernow && links[playernow].x < links[j].x && links[j].x < links[playernow].x + 2 && links[playernow].y + 1 < links[j].y && links[j].y < links[playernow].y + 7 && links[j].classement == -1 && links[j].bouclier != true)
+                {
+                    links[j].points -= DEGAT_EPEE;
+                    links[playernow].points += RECUP_RUBIS;
+                }
+            }
+            break;
+        case LEFT :
+            for (j=0; j<NB_PLAYER; j++)
+            {
+                if(j != playernow && links[playernow].x - 2 < links[j].x && links[j].x < links[playernow].x && links[playernow].y  < links[j].y && links[j].y < links[playernow].y + 2 && links[j].classement == -1 && links[j].bouclier != true)
+                {
+                    links[j].points -= DEGAT_EPEE;
+                    links[playernow].points += RECUP_RUBIS;
+                }
+            }
+        case RIGHT :
+            for (j=0; j<NB_PLAYER; j++)
+            {
+                if(j != playernow && links[playernow].x < links[j].x && links[j].x < links[playernow].x + 4 && links[playernow].y  < links[j].y && links[j].y < links[playernow].y + 2 && links[j].classement == -1 && links[j].bouclier != true)
+                {
+                    links[j].points -= DEGAT_EPEE;
+                    links[playernow].points += RECUP_RUBIS;
+                }
+            }
+            break;
+    }
 }
 
 /*
@@ -472,9 +541,9 @@ void ganon_move(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], Mix_Chunk *s_degat
         int decalx = ganonx - x, decaly = ganony - y;
         if (decalx > 0)
         {
-            if (decalx>5)
+            if (decalx>10)
             {
-                ganonx -= 5;
+                ganonx -= 10;
             }
             else
             {
@@ -483,42 +552,42 @@ void ganon_move(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], Mix_Chunk *s_degat
         }
         else if (decalx < 0)
         {
-            if (decalx > -5)
+            if (decalx > -10)
             {
                 ganonx +=decalx;
             }
             else
             {
-                ganonx += 5;
+                ganonx += 10;
             }
         }
         if (decaly > 0)
         {
-            if (decaly < 5)
+            if (decaly < 10)
             {
                 ganony -=decaly;
             }
             else
             {
-                ganony -= 5;
+                ganony -= 10;
             }
         }
         else if (decaly < 0)
         {
-            if (decaly > -5)
+            if (decaly > -10)
             {
                 ganony +=decaly;
             }
             else
             {
-                ganony += 5;
+                ganony += 10;
             }
         }
         decalx = ganonx - x;
         decaly = ganony - y;
         if (decalx == 0 && decaly == 0)
         {
-            links[bestlink].points -= 30;
+            links[bestlink].points -= 20;
             ganonx = LARGEUR_FENETRE / 2 - 50;
             ganony = HAUTEUR_FENETRE / 2 ;
             research = 1;
@@ -567,16 +636,16 @@ bool test_class(int maps[][NB_BLOCS_HAUTEUR], Player links[NB_PLAYER])
 /*
 Fonction qui détérmine quand il y a un vainqeur.
 */
-int win(bool survivant, SDL_Surface* screen, Mix_Music *gerudo, Player links[NB_PLAYER], int continuer)
+int win(bool survivant, SDL_Surface* screen, Mix_Music *gerudo, Player links[NB_PLAYER], int continuer, int tours)
 {
-    if (survivant == true)
+    if (survivant == true || tours == 2000)
     {
-
         int i;
+
         Mix_PauseMusic();
         char winner[35] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
         TTF_Font *police = NULL;
-        police = TTF_OpenFont("triforce.ttf", 45);
+        police = TTF_OpenFont("triforce.ttf", 25);
         SDL_Color couleurJaune = {255, 255, 0};
         SDL_Surface *background = NULL, *texte = NULL;
         SDL_Rect positionBackground, position;
@@ -593,7 +662,7 @@ int win(bool survivant, SDL_Surface* screen, Mix_Music *gerudo, Player links[NB_
         for(i=0;i<NB_PLAYER;i++)
         {
             position.x = 150;
-            position.y = 180 + 70*i;
+            position.y = 180 + 28*i;
             sprintf(winner, "J%d a %d points et est a la %d position",i+1,links[i].points,links[i].classement);
             texte = TTF_RenderText_Blended(police, winner, couleurJaune);
             SDL_BlitSurface(texte, NULL, screen, &position);
@@ -616,6 +685,7 @@ int win(bool survivant, SDL_Surface* screen, Mix_Music *gerudo, Player links[NB_
                     }
             }
         }
+        TTF_CloseFont(police);
     }
     return continuer;
 }
