@@ -1,5 +1,11 @@
 # Nouvautés & Annonces
 
+### 25/03:
+
+Ajout des bombes et des pots mais les bombes n'explosent pas encore. Il ne reste plus que la gestion des collisions entre IA et l'explosion de la bombe. Il restera quelques bugs que nous corrigerons mais les IA's sont quasi totalement codable, début/milieu de la semaine prochaine vous aurez tout. <br/>
+
+### 24/03:
+
 Vous disposez de quasiment toutes les possibilités pour les IAs, il ne reste que les pots avec la bombe. Si vous trouvez des problèmes au niveau des coups d'épées ou à tout autre niveau, merci de nous le signalez. Vous recevrez un bonus si vous signalez un quelconque problème. Nous essayons de finir les IAs au plus vite, milieu de la semaine prochaine normalement. Pour que vous soyez au courant les IAs seront à rendre aux alentours du 5 avril pour qu'elles soient toutes testées avant 10 Avril. De plus oubliez pas qu'il y a un sondage plus bas qui vous permet de décider su futur du jeu.<br/>
 
 # Link Rupees Rush
@@ -59,7 +65,7 @@ Voici la liste de ce qui est opérationnel: <br/>
 - Déplacements (haut, bas, gauche, droite) : Fonctionnel.
 - frapper                                  : Fonctionne mais n'est pas totalement fini(reste des bugs).<br/>
 - parer                                    : Fonctionnel.<br/>
-- poser une bombe						     : Entier disponible.<br/>
+- poser une bombe						     : Fonctionnel mais les bombes n'explosent pas encore.<br/>
 - Ganon (IA du jeu)						   : Fonctionnel.<br/>
 
 ## Coder l'IA
