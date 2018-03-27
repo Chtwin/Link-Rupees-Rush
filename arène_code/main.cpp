@@ -88,7 +88,7 @@ Fonction qui lance le jeu:
 */
 int play (SDL_Surface* screen)
 {
-    int i = 0, continuer = 1, j = 0, time = 0, lastTime = 0, stime = 0, mtime = 0, points = 0, tours = 0, bonus = 0;
+    int i = 0, continuer = 1, j = 0, k= 0, time = 0, lastTime = 0, stime = 0, mtime = 0, points = 0, tours = 0, bonus = 0;
     Mix_AllocateChannels(4);
     char temps[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     char score[6] = {0,0,0,0,0,0};
@@ -151,6 +151,13 @@ int play (SDL_Surface* screen)
         {
             if (links[i].classement == -1)
             {
+                for (j=0;j<NB_BLOCS_LARGEUR;j++)
+                {
+                    for(k=0;k<NB_BLOCS_HAUTEUR;k++)
+                    {
+                        maps_ia[j][k]= maps[j][k];
+                    }
+                }
                 links[i].bouclier = false;
                 position.x =links[i].x;
                 position.y =links[i].y;
@@ -190,24 +197,36 @@ int play (SDL_Surface* screen)
                                 bonus += movePlayer(maps, &position, LEFT, s_ruppes);
                                 break;
                             case EPEE_HAUT:
-                                linkNow = link[HIT_UP];
-                                links[i].orientation = UP;
-                                damage(maps, links, i);
+                                if (tours > 80)
+                                {
+                                    linkNow = link[HIT_UP];
+                                    links[i].orientation = UP;
+                                    damage(maps, links, i);
+                                }
                                 break;
                             case EPEE_BAS:
-                                links[i].orientation = DOWN;
-                                linkNow = link[HIT_DOWN];
-                                damage(maps, links, i);
+                                if (tours > 80)
+                                {
+                                    links[i].orientation = DOWN;
+                                    linkNow = link[HIT_DOWN];
+                                    damage(maps, links, i);
+                                }
                                 break;
                             case EPEE_DROITE:
-                                links[i].orientation = RIGHT;
-                                linkNow = link[HIT_RIGHT];
-                                damage(maps, links, i);
+                                if (tours > 80)
+                                {
+                                    links[i].orientation = RIGHT;
+                                    linkNow = link[HIT_RIGHT];
+                                    damage(maps, links, i);
+                                }
                                 break;
                             case EPEE_GAUCHE:
-                                links[i].orientation = LEFT;
-                                linkNow = link[HIT_LEFT];
-                                damage(maps, links, i);
+                                if (tours > 80)
+                                {
+                                    links[i].orientation = LEFT;
+                                    linkNow = link[HIT_LEFT];
+                                    damage(maps, links, i);
+                                }
                                 break;
                             //Mix_PlayChannel(1, s_sword, 0);
                             case PARER:
@@ -215,11 +234,14 @@ int play (SDL_Surface* screen)
                                 links[i].bouclier = true;
                                 break;
                             case BOMBE:
-                                if (links[i].item >0)
+                                if (tours > 80)
                                 {
-                                    links[i].item--;
-                                    maps[links[i].x][links[i].y + 1] = BOMBE_MAP;
-                                    item(maps,links,tours,i);
+                                    if (links[i].item >0)
+                                    {
+                                        links[i].item--;
+                                        maps[links[i].x][links[i].y + 1] = BOMBE_MAP;
+                                        item(maps,links,tours,i);
+                                    }
                                 }
                                 break;
                         }
@@ -302,13 +324,6 @@ int play (SDL_Surface* screen)
         //SDL_BlitSurface(ganonNow, NULL, screen, &position);
         garde(screen,guard, tours);
         SDL_Flip(screen);
-        for (i=0;i<NB_BLOCS_LARGEUR;i++)
-        {
-            for(j=0;j<NB_BLOCS_HAUTEUR;j++)
-            {
-                maps_ia[i][j]= maps[i][j];
-            }
-        }
         continuer = win(test_class(maps, links), screen, gerudo, links, continuer, tours);
     }
     SDL_FreeSurface(wall);
