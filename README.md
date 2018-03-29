@@ -1,4 +1,8 @@
-# Nouvautés & Annonces
+# Nouveautés & Annonces
+
+### 29/03:
+
+Demain matin ajout des dernières modifications et les IA's seront 100% opérationelles.
 
 ### 25/03:
 
