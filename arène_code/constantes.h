@@ -16,11 +16,14 @@
 #define BLUE_BONUS  5
 #define RED_BONUS   20
 #define ECART 33
-#define NB_PLAYER 26         // vous pouvez mettre le nombre de joueurs que vous voulez
+#define NB_PLAYER 2         // vous pouvez mettre le nombre de joueurs que vous voulez
 #define DEGAT_EPEE 5
 #define RECUP_RUBIS 3
 #define CENTRE_CERCLE_X  (LARGEUR_FENETRE/2 -50) / TAILLE_BLOC
 #define CENTRE_CERCLE_Y  (HAUTEUR_FENETRE/2) / TAILLE_BLOC
+#define DEGAT_BOMBE 75
+#define RECUP_DEGAT_BOMBE 15
+#define RAYON_BOMBE 10
 
 /*
     Ajout de la structure propre à chaque IA
@@ -54,7 +57,7 @@ struct Item
 
 enum {UP, DOWN, LEFT, RIGHT,ANIM_UP1,ANIM_UP2,ANIM_UP3,ANIM_DOWN1,ANIM_DOWN2,ANIM_DOWN3,ANIM_LEFT1,ANIM_LEFT2,ANIM_LEFT3,ANIM_RIGHT1,ANIM_RIGHT2,ANIM_RIGHT3, HIT_UP, HIT_DOWN, HIT_LEFT, HIT_RIGHT, SHIELD};
 enum {HAUT, BAS, GAUCHE, DROITE, EPEE_HAUT,EPEE_BAS,EPEE_DROITE,EPEE_GAUCHE, PARER,BOMBE};  /// Différentes actions que peuvent faire les IA's
-enum{GREEN_RUPEE,BLUE_RUPEE,RED_RUPEE,VIDE,MUR,IA,GANON,POT,BOMBE_MAP};
+enum{GREEN_RUPEE,BLUE_RUPEE,RED_RUPEE,VIDE,MUR,IA,GANON,POT,BOMBE_MAP,BOMBE_DEFLAG};
 int play (SDL_Surface* screen);
 int movePlayer (int maps[][NB_BLOCS_HAUTEUR], SDL_Rect *position, int direction, Mix_Chunk *s_ruppes);
 void SDL_Delay(Uint32 ms);
@@ -74,7 +77,7 @@ int test_ia(int maps[][NB_BLOCS_HAUTEUR], int x, int y, int points, int item, in
 void blit_items(int maps[][NB_BLOCS_HAUTEUR], SDL_Surface* screen, SDL_Surface* rupees[3], SDL_Surface *bombes[10]);
 void setup_ia(int maps[][NB_BLOCS_HAUTEUR], Player links[NB_PLAYER]);
 bool test_class(int maps[][NB_BLOCS_HAUTEUR], Player links[NB_PLAYER]);
-void item(int maps[][NB_BLOCS_HAUTEUR], Player links[NB_PLAYER], int tours, int joueur);
+void item(int maps[][NB_BLOCS_HAUTEUR], Player links[NB_PLAYER], int tours, Item bombes [100]);
 /*
 Fonction qui renvoie un entier pour faire bouger l'IA
 */
