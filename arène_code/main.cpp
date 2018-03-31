@@ -159,7 +159,7 @@ int play (SDL_Surface* screen)
                         maps_ia[j][k]= maps[j][k];
                     }
                 }
-                maps[links[i].x][links[i].y] = ME;
+                maps[links[i].x][links[i].y] = IA;
                 links[i].bouclier = false;
                 position.x =links[i].x;
                 position.y =links[i].y;
