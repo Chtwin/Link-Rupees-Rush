@@ -617,26 +617,30 @@ void item(int maps[][NB_BLOCS_HAUTEUR], Player links[NB_PLAYER], int tours, Item
           	bombes[i] = item;
         }
     }
-    for (i=0; i<NB_BLOCS_HAUTEUR; i++)  // parcours les bombes sur la map
+    for (i=0; i<NB_BLOCS_HAUTEUR + 20; i++)  // parcours les bombes sur la map
     {
-        for (j=0; j<NB_BLOCS_HAUTEUR; j++) // parcours les bombes sur la map
+        for (j=0; j<NB_BLOCS_LARGEUR + 20; j++) // parcours les bombes sur la map
         {
-            if(maps[i][j] == BOMBE_MAP  ||maps[i][j] == BOMBE_DEFLAG )
+            if(maps[i][j] == BOMBE_MAP  || maps[i][j] == BOMBE_DEFLAG )
             {
-              	for (z=0; z<100; z++){ // Parcour tout le tableau de bombe
-                    if(bombes[z].x == i && bombes[z].y == j){ // a la recherche du struct de la bombe a ces meme coordonée
+              	for (z=0; z<100; z++)
+              	{
+                                                                            // Parcour tout le tableau de bombe
+                    if(bombes[z].x == i && bombes[z].y == j)
+                    {                                                       // a la recherche du struct de la bombe a ces meme coordonée
                          if (bombes[z].active==true)//si la bombe est active alors
                          {
-                            if(bombes[z].tours > 17){
-                              	//Remise a 0 de la bombe
+                            if(bombes[z].tours > 17)
+                            {
+                                //Remise a 0 de la bombe
                                 bombes[z].x = -1;
                                 bombes[z].y = -1;
-                                bombes[z].active = 0;
+                                bombes[z].active = false;
                                 bombes[z].joueur = 0;
-                              	maps[i][j] = VIDE;
-                              	bombes[z].tours = 0;
+                                maps[i][j] = VIDE;
+                                bombes[z].tours = 0;
                             }
-                            else if (bombes[z].tours >= 15 && bombes[z].tours <= 17)// Si une bombe explose alors
+                            if (bombes[z].tours >= 15 && bombes[z].tours <= 17)// Si une bombe explose alors
                             {
                             	for (l=0; l<NB_PLAYER; l++)//pour tout les joueurs
                            		{
@@ -644,14 +648,19 @@ void item(int maps[][NB_BLOCS_HAUTEUR], Player links[NB_PLAYER], int tours, Item
                                     if (bombes[z].x - RAYON_BOMBE < links[l].x && links[l].x < bombes[z].x + RAYON_BOMBE && bombes[z].y + RAYON_BOMBE > links[l].y && links[l].y > bombes[z].y - RAYON_BOMBE && links[l].classement == - 1) //Dans le rayon de la deflagration
                                     {
                                         links[l].points -= DEGAT_BOMBE;// Mettre un degat au joueur
-                                      	links[bombes[z].joueur].points += RECUP_DEGAT_BOMBE;
+                                      	if (links[bombes[z].joueur].classement == -1)
+                                        {
+                                            links[bombes[z].joueur].points +=0;
+                                        }
+
                                     }
 
                             	}
                             	maps[i][j] = BOMBE_DEFLAG;
                             	bombes[z].tours+=1; // On incremente de 1 les tours pour faire exploser la bombe
                             }
-                            else{
+                            else
+                            {
                             	bombes[z].tours+=1; // On incremente de 1 les tours pour faire exploser la bombe
                             }
                         }
@@ -715,12 +724,12 @@ Fonction qui permet à Ganon de se déplacer.
 */
 void ganon_move(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], Mix_Chunk *s_degat, Player links[NB_PLAYER], SDL_Rect *position, int tours)
 {
-    int i = 0;
+    int i = 0 , direction_ganon;
     static int research = 1;
     static int bestlink = 0;
     static int ganonx = LARGEUR_FENETRE / 2 - 50;
     static int ganony = HAUTEUR_FENETRE / 2;
-    static int delay = 250;
+    static int delay = 180;
     if (tours > delay)
     {
         if (research == 1)
@@ -739,9 +748,11 @@ void ganon_move(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], Mix_Chunk *s_degat
         int decalx = ganonx - x, decaly = ganony - y;
         if (decalx > 0)
         {
+            direction_ganon = 0;    // aller a gauche
             if (decalx>10)
             {
                 ganonx -= 10;
+
             }
             else
             {
@@ -750,9 +761,11 @@ void ganon_move(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], Mix_Chunk *s_degat
         }
         else if (decalx < 0)
         {
+            direction_ganon = 1;  // aller a droite
             if (decalx > -10)
             {
                 ganonx +=decalx;
+
             }
             else
             {
@@ -761,6 +774,7 @@ void ganon_move(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], Mix_Chunk *s_degat
         }
         if (decaly > 0)
         {
+            direction_ganon = 2;   // aller en haut
             if (decaly < 10)
             {
                 ganony -=decaly;
@@ -772,6 +786,7 @@ void ganon_move(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], Mix_Chunk *s_degat
         }
         else if (decaly < 0)
         {
+            direction_ganon = 3;  // aller en bas
             if (decaly > -10)
             {
                 ganony +=decaly;
@@ -785,14 +800,7 @@ void ganon_move(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], Mix_Chunk *s_degat
         decaly = ganony - y;
         if (decalx == 0 && decaly == 0)
         {
-            if(links[bestlink].points < 20 && tours < 1000)
-            {
-                links[bestlink].points = 1;
-            }
-            else
-            {
-                links[bestlink].points -= 20;
-            }
+            links[bestlink].points -= 15;
             ganonx = LARGEUR_FENETRE / 2 - 50;
             ganony = HAUTEUR_FENETRE / 2 ;
             research = 1;
@@ -802,7 +810,38 @@ void ganon_move(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], Mix_Chunk *s_degat
     }
     position->x = ganonx;
     position->y = ganony;
-    maps[ganonx/TAILLE_BLOC][ganony/TAILLE_BLOC] = GANON;
+    switch(direction_ganon)
+    {
+        case 0:
+            if(maps[ganonx/TAILLE_BLOC][ganony/TAILLE_BLOC] != VIDE)
+            {
+                maps[ganonx - 10/TAILLE_BLOC][ganony/TAILLE_BLOC] = GANON;
+            }
+            break;
+
+        case 1:
+            if(maps[ganonx/TAILLE_BLOC][ganony/TAILLE_BLOC] != VIDE)
+            {
+                maps[ganonx + 10/TAILLE_BLOC][ganony/TAILLE_BLOC] = GANON;
+            }
+            break;
+
+        case 2:
+            if(maps[ganonx/TAILLE_BLOC][ganony/TAILLE_BLOC] != VIDE)
+            {
+                maps[ganonx/TAILLE_BLOC][ganony - 10/TAILLE_BLOC] = GANON;
+            }
+            break;
+
+        case 3:
+            if(maps[ganonx/TAILLE_BLOC][ganony/TAILLE_BLOC] != VIDE)
+            {
+                maps[ganonx/TAILLE_BLOC][ganony + 10/TAILLE_BLOC] = GANON;
+            }
+            break;
+
+    }
+
 }
 /*
 Fonction qui classe les joueurs.
