@@ -12,7 +12,7 @@
 #define MINX    TAILLE_BLOC + 7
 #define MAXY    NB_BLOCS_HAUTEUR - TAILLE_BLOC - 4
 #define MAXX    NB_BLOCS_LARGEUR - TAILLE_BLOC - 8
-#define VOLUME  0 //15
+#define VOLUME  3 //15
 #define BLUE_BONUS  5
 #define RED_BONUS   20
 #define ECART 33
@@ -83,12 +83,20 @@ Fonction qui renvoie un entier pour faire bouger l'IA
 */
 int ia_1(int maps_ia[][NB_BLOCS_HAUTEUR], int x, int y, int points, int item, int tours)
 {
-    return rand()%10;
+    if (rand()%25 == 0)
+    {
+        return  4 + rand()%4;
+    }
+    return  0 + rand()%4;
 }
 
 int ia_2(int maps_ia[][NB_BLOCS_HAUTEUR], int x, int y, int points, int item, int tours)
 {
-    return rand()%10;
+    if (rand()%25 == 0)
+    {
+        return  4 + rand()%4;
+    }
+    return  0 + rand()%4;
 }
 
 #endif
