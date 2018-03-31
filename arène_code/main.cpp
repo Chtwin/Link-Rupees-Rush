@@ -100,6 +100,16 @@ int play (SDL_Surface* screen)
             maps[i][j]= VIDE;
         }
     }
+    for (i=MINY - 1; i<MAXY; i++)
+    {
+        maps[MINX][i] = MUR;
+        maps[MAXX][i] = MUR;
+    }
+    for (i=MINX; i<MAXX; i++)
+    {
+        maps [i][MINY]=MUR;
+        maps [i][MAXY]=MUR;
+    }
     for (i=0;i<4;i++)
     {
         Mix_Volume(i,VOLUME);
@@ -501,7 +511,7 @@ int movePlayer (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *position
     switch (direction)
     {
         case UP:
-            if (position->y - 1 < MINY || maps[position->x][position->y - 1] == BOMBE_MAP || maps[position->x][position->y - 1] == IA || maps[position->x][position->y - 1] == BOMBE_DEFLAG)
+            if (position->y - 1 < MINY + 1 || maps[position->x][position->y - 1] == BOMBE_MAP || maps[position->x][position->y - 1] == IA || maps[position->x][position->y - 1] == BOMBE_DEFLAG)
                 break;
 
             maps[position->x][position->y] = VIDE;
@@ -510,7 +520,7 @@ int movePlayer (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *position
 
 
         case DOWN:
-            if (position->y + 1 >= MAXY || maps[position->x][position->y + 1] == BOMBE_MAP || maps[position->x][position->y + 1] == IA || maps[position->x][position->y + 1] == BOMBE_DEFLAG)
+            if (position->y + 1 > MAXY - 1 || maps[position->x][position->y + 1] == BOMBE_MAP || maps[position->x][position->y + 1] == IA || maps[position->x][position->y + 1] == BOMBE_DEFLAG)
                 break;
 
             maps[position->x][position->y] = VIDE;
@@ -519,7 +529,7 @@ int movePlayer (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *position
             break;
 
         case RIGHT:
-            if (position->x + 1 >= MAXX || maps[position->x + 1][position->y] == BOMBE_MAP || maps[position->x + 1][position->y] == IA || maps[position->x + 1][position->y] == BOMBE_DEFLAG)
+            if (position->x + 1 > MAXX - 1|| maps[position->x + 1][position->y] == BOMBE_MAP || maps[position->x + 1][position->y] == IA || maps[position->x + 1][position->y] == BOMBE_DEFLAG)
                 break;
 
             maps[position->x][position->y] = VIDE;
@@ -528,7 +538,7 @@ int movePlayer (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *position
             break;
 
         case LEFT:
-            if (position->x - 1 < MINX || maps[position->x - 1][position->y] == BOMBE_MAP || maps[position->x - 1][position->y] == IA || maps[position->x - 1][position->y] == BOMBE_DEFLAG)
+            if (position->x - 1 < MINX + 1 || maps[position->x - 1][position->y] == BOMBE_MAP || maps[position->x - 1][position->y] == IA || maps[position->x - 1][position->y] == BOMBE_DEFLAG)
                 break;
 
             maps[position->x][position->y] = VIDE;
@@ -586,7 +596,7 @@ int movePlayer (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *position
 
         }
 
-        if ((*currentCase) != IA && (*currentCase) != BOMBE_MAP && (*currentCase) != GANON)
+        if ((*currentCase) != IA && (*currentCase) != BOMBE_MAP && (*currentCase) != GANON && (*currentCase) != MUR)
             (*currentCase) = VIDE;
 
     }
@@ -998,9 +1008,9 @@ void blit_items(int maps[][NB_BLOCS_HAUTEUR], SDL_Surface* screen, SDL_Surface* 
 {
     int i, j;
     SDL_Rect position;
-    for (i = MINX ; i < MAXX ; i++)
+    for (i = MINX - 10 ; i < MAXX + 10 ; i++)
     {
-        for (j = MINY ; j < MAXY ; j++)
+        for (j = MINY - 10 ; j < MAXY + 10; j++)
         {
             position.x = i*TAILLE_BLOC + 10;
             position.y = j*TAILLE_BLOC + 10;
