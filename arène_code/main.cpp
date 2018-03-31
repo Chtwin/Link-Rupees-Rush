@@ -159,6 +159,7 @@ int play (SDL_Surface* screen)
                         maps_ia[j][k]= maps[j][k];
                     }
                 }
+                maps[links[i].x][links[i].y] = ME;
                 links[i].bouclier = false;
                 position.x =links[i].x;
                 position.y =links[i].y;
@@ -203,6 +204,7 @@ int play (SDL_Surface* screen)
                                     linkNow = link[HIT_UP];
                                     links[i].orientation = UP;
                                     damage(maps, links, i);
+                                    Mix_PlayChannel(1, s_sword, 0);
                                 }
                                 break;
                             case EPEE_BAS:
@@ -211,6 +213,7 @@ int play (SDL_Surface* screen)
                                     links[i].orientation = DOWN;
                                     linkNow = link[HIT_DOWN];
                                     damage(maps, links, i);
+                                    Mix_PlayChannel(1, s_sword, 0);
                                 }
                                 break;
                             case EPEE_DROITE:
@@ -219,6 +222,7 @@ int play (SDL_Surface* screen)
                                     links[i].orientation = RIGHT;
                                     linkNow = link[HIT_RIGHT];
                                     damage(maps, links, i);
+                                    Mix_PlayChannel(1, s_sword, 0);
                                 }
                                 break;
                             case EPEE_GAUCHE:
@@ -227,9 +231,9 @@ int play (SDL_Surface* screen)
                                     links[i].orientation = LEFT;
                                     linkNow = link[HIT_LEFT];
                                     damage(maps, links, i);
+                                    Mix_PlayChannel(1, s_sword, 0);
                                 }
                                 break;
-                            //Mix_PlayChannel(1, s_sword, 0);
                             case PARER:
                                 linkNow = link[SHIELD];
                                 links[i].bouclier = true;
@@ -252,6 +256,7 @@ int play (SDL_Surface* screen)
                                                     bombe[b].y = links[i].y + 1;
                                                     bombe[b].active = 1;
                                                     bombe[b].joueur = i;
+                                                    bombe[b].tours = 0;
                                                     maps[links[i].x][links[i].y + 1] = BOMBE_MAP;
                                                     break;
                                                 }
@@ -430,7 +435,7 @@ void setup_ia(int maps[][NB_BLOCS_HAUTEUR], Player links[NB_PLAYER])
     {
         for (i=0;i<NB_PLAYER;i++)
         {
-            links[i].points = 20;
+            links[i].points = 25 + rand()%3;
             links[i].orientation = DOWN;
             links[i].classement = -1;
             maps[links[i].x][links[i].y] = IA;
@@ -446,7 +451,7 @@ void setup_ia(int maps[][NB_BLOCS_HAUTEUR], Player links[NB_PLAYER])
         int rayon =22;
         for (i=0;i<NB_PLAYER;i++)
         {
-            links[i].points = 30;
+            links[i].points = 30 + rand()%3;
             links[i].orientation = DOWN;
             links[i].classement = -1;
             links[i].item = 0;
@@ -496,33 +501,37 @@ int movePlayer (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *position
     switch (direction)
     {
         case UP:
-            if (position->y - 1 < MINY || maps[position->x][position->y - 1] == BOMBE_MAP)
+            if (position->y - 1 < MINY || maps[position->x][position->y - 1] == BOMBE_MAP || maps[position->x][position->y - 1] == IA || maps[position->x][position->y - 1] == BOMBE_DEFLAG)
                 break;
 
+            maps[position->x][position->y] = VIDE;
             position->y--;
-
             break;
 
+
         case DOWN:
-            if (position->y + 1 >= MAXY || maps[position->x][position->y + 1] == BOMBE_MAP)
+            if (position->y + 1 >= MAXY || maps[position->x][position->y + 1] == BOMBE_MAP || maps[position->x][position->y + 1] == IA || maps[position->x][position->y + 1] == BOMBE_DEFLAG)
                 break;
 
+            maps[position->x][position->y] = VIDE;
             position->y++;
 
             break;
 
         case RIGHT:
-            if (position->x + 1 >= MAXX || maps[position->x + 1][position->y] == BOMBE_MAP)
+            if (position->x + 1 >= MAXX || maps[position->x + 1][position->y] == BOMBE_MAP || maps[position->x + 1][position->y] == IA || maps[position->x + 1][position->y] == BOMBE_DEFLAG)
                 break;
 
+            maps[position->x][position->y] = VIDE;
             position->x++;
 
             break;
 
         case LEFT:
-            if (position->x - 1 < MINX || maps[position->x - 1][position->y] == BOMBE_MAP)
+            if (position->x - 1 < MINX || maps[position->x - 1][position->y] == BOMBE_MAP || maps[position->x - 1][position->y] == IA || maps[position->x - 1][position->y] == BOMBE_DEFLAG)
                 break;
 
+            maps[position->x][position->y] = VIDE;
             position->x--;
 
             break;
@@ -548,17 +557,21 @@ int movePlayer (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *position
         {
             case GREEN_RUPEE:
                 bonus++;
+                Mix_PlayChannel(1, s_ruppes, 0);
                 break;
             case BLUE_RUPEE:
                 bonus += BLUE_BONUS;
+                Mix_PlayChannel(1, s_ruppes, 0);
                  break;
             case RED_RUPEE:
                 bonus += RED_BONUS;
+                Mix_PlayChannel(1, s_ruppes, 0);
                 break;
             case POT:
                 if(rand()%10 == 5)
                 {
                     bonus += 25;
+                    Mix_PlayChannel(1, s_ruppes, 0);
                 }
                 else if(rand()%2 == 1)
                 {
@@ -567,14 +580,15 @@ int movePlayer (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *position
                 else
                 {
                     bonus+=5;
+                    Mix_PlayChannel(1, s_ruppes, 0);
                 }
                 break;
+
         }
 
         if ((*currentCase) != IA && (*currentCase) != BOMBE_MAP && (*currentCase) != GANON)
             (*currentCase) = VIDE;
 
-        //Mix_PlayChannel(1, s_ruppes, 0); // Désactivation du son des rubis à cause d'un bug;
     }
     return bonus;
 }
@@ -760,7 +774,14 @@ void ganon_move(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], Mix_Chunk *s_degat
         decaly = ganony - y;
         if (decalx == 0 && decaly == 0)
         {
-            links[bestlink].points -= 15;
+            if(links[bestlink].points < 20 && tours < 1000)
+            {
+                links[bestlink].points = 1;
+            }
+            else
+            {
+                links[bestlink].points -= 20;
+            }
             ganonx = LARGEUR_FENETRE / 2 - 50;
             ganony = HAUTEUR_FENETRE / 2 ;
             research = 1;
