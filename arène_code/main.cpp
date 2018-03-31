@@ -100,7 +100,7 @@ int play (SDL_Surface* screen)
             maps[i][j]= VIDE;
         }
     }
-    for (i=MINY - 1; i<MAXY; i++)
+    for (i=MINY; i<MAXY; i++)
     {
         maps[MINX][i] = MUR;
         maps[MAXX][i] = MUR;
@@ -125,7 +125,7 @@ int play (SDL_Surface* screen)
     positionScoreboard.x= 1280;
     positionScoreboard.y= 0;
     background = IMG_Load("arene_beta_13.bmp");
-    scoreboard = IMG_Load("scoreboard.bmp");
+    scoreboard = IMG_Load("scoreboard2.bmp");
     setup_pictures(link, rupees,ganon, zelda, guard, skull,daruina,granma,koume,maple,oldman,nayru,saria,sheik,ruto,rauru, bombes);
     //setup_map(maps);
     linkNow = link[DOWN];
@@ -156,6 +156,7 @@ int play (SDL_Surface* screen)
     while (continuer)
     {
         SDL_BlitSurface(background, NULL, screen, &positionBackground);
+        //SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 17, 206, 112));
         SDL_BlitSurface(scoreboard, NULL, screen, &positionScoreboard);
         tours++;
         for (i=0;i<NB_PLAYER;i++)
@@ -301,11 +302,11 @@ int play (SDL_Surface* screen)
                 SDL_BlitSurface(p_points, NULL, screen, &position);
                 ///
                 position.x = 1400;
-                position.y = 150 + i*25;
+                position.y = 397 + i*25;
                 SDL_BlitSurface(rupees[GREEN_RUPEE], NULL, screen, &position);
                 p_points = TTF_RenderText_Blended(police2, score, couleurJaune);
                 position.x = 1425;
-                position.y = 155 + i*25;
+                position.y = 400 + i*25;
                 if (points < 10)
                 {
                     sprintf(score, "X 00%d\tJ%d",links[i].points, i+1);
