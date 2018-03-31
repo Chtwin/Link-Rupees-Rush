@@ -709,7 +709,7 @@ void ganon_move(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], Mix_Chunk *s_degat
     static int bestlink = 0;
     static int ganonx = LARGEUR_FENETRE / 2 - 50;
     static int ganony = HAUTEUR_FENETRE / 2;
-    static int delay = 180;
+    static int delay = 250;
     if (tours > delay)
     {
         if (research == 1)
