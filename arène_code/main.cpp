@@ -852,7 +852,7 @@ bool test_class(int maps[][NB_BLOCS_HAUTEUR], Player links[NB_PLAYER])
     static int num = NB_PLAYER;
     for(i=0;i<NB_PLAYER;i++)
     {
-        if (links[i].points <= 0 && links[i].classement == -1)
+        if (links[i].points <= 0 && links[i].classement == -1 && num != 1)
         {
             links[i].classement = num;
             maps[links[i].x][links[i].y] = VIDE;
