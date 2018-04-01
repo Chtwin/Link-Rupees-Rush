@@ -57,7 +57,7 @@ struct Item
 
 enum {UP, DOWN, LEFT, RIGHT,ANIM_UP1,ANIM_UP2,ANIM_UP3,ANIM_DOWN1,ANIM_DOWN2,ANIM_DOWN3,ANIM_LEFT1,ANIM_LEFT2,ANIM_LEFT3,ANIM_RIGHT1,ANIM_RIGHT2,ANIM_RIGHT3, HIT_UP, HIT_DOWN, HIT_LEFT, HIT_RIGHT, SHIELD};
 enum {HAUT, BAS, GAUCHE, DROITE, EPEE_HAUT,EPEE_BAS,EPEE_DROITE,EPEE_GAUCHE, PARER,BOMBE};  /// Différentes actions que peuvent faire les IA's
-enum{GREEN_RUPEE,BLUE_RUPEE,RED_RUPEE,VIDE,MUR,IA,GANON,POT,BOMBE_MAP,BOMBE_DEFLAG};
+enum{GREEN_RUPEE,BLUE_RUPEE,RED_RUPEE,VIDE,MUR,IA,GANON,POT,BOMBE_MAP,BOMBE_DEFLAG};    /// Différents éléments trouvables dans le tableau en argument.
 int play (SDL_Surface* screen);
 int movePlayer (int maps[][NB_BLOCS_HAUTEUR], SDL_Rect *position, int direction, Mix_Chunk *s_ruppes);
 void SDL_Delay(Uint32 ms);
