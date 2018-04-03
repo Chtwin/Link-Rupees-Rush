@@ -866,6 +866,8 @@ bool test_class(int maps[][NB_BLOCS_HAUTEUR], Player links[NB_PLAYER])
         {
             if (links[i].classement == -1)
             {
+                if (links[i].points < 0)
+                    links[i].points = 0;
                 links[i].classement = 1;
             }
         }
