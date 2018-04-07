@@ -300,29 +300,30 @@ int play (SDL_Surface* screen)
                 sprintf(score, "J%d",i+1);
                 p_points = TTF_RenderText_Blended(police2, score, couleurJaune);
                 SDL_BlitSurface(p_points, NULL, screen, &position);
-                ///
-                position.x = 1400;
-                position.y = 397 + i*25;
-                SDL_BlitSurface(rupees[GREEN_RUPEE], NULL, screen, &position);
-                p_points = TTF_RenderText_Blended(police2, score, couleurJaune);
-                position.x = 1425;
-                position.y = 400 + i*25;
-                if (points < 10)
-                {
-                    sprintf(score, "X 00%d\tJ%d",links[i].points, i+1);
-                }
-                else if (points < 100)
-                {
-                    sprintf(score, "X 0%d\tJ%d",links[i].points,i+1);
-                }
-                else
-                {
-                    sprintf(score, "X %d\tJ%d",links[i].points,i+1);
-                }
-                p_points = TTF_RenderText_Blended(police2, score, couleurJaune);
-                SDL_BlitSurface(p_points, NULL, screen, &position);
             }
-
+            position.x = (i > 16) ? 1650 : 1400;
+            position.y = (i > 16) ? 397 + (i-17)*25 : 397 + i*25;
+            SDL_BlitSurface((links[i].classement == -1) ? rupees[GREEN_RUPEE] : rupees[RED_RUPEE], NULL, screen, &position);
+            position.x = (i > 16) ? 1730 : 1480;
+            position.y = (i > 16) ? 397 + (i-17)*25 : 397 + i*25;
+            SDL_BlitSurface(bombes[1], NULL, screen, &position);
+            SDL_Color couleurRouge = {255,0 , 0};
+            position.x = (i > 16) ? 1675 : 1425;
+            position.y = (i > 16) ? 400 + (i-17)*25 : 400 + i*25;
+            if (links[i].points < 10)
+            {
+                sprintf(score, "X 00%d        X %d \tJ%d",links[i].points,links[i].item, i+1);
+            }
+            else if (links[i].points < 100)
+            {
+                sprintf(score, "X 0%d        X %d \tJ%d",links[i].points,links[i].item,i+1);
+            }
+            else
+            {
+                sprintf(score, "X %d        X %d \tJ%d",links[i].points,links[i].item,i+1);
+            }
+            p_points = TTF_RenderText_Blended(police2, score, (links[i].classement == -1) ? couleurJaune : couleurRouge);
+            SDL_BlitSurface(p_points, NULL, screen, &position);
         }
         if(tours > 80)
         {
@@ -409,7 +410,7 @@ void setup_map (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR])
     {
         for (j = MINY + 13; j < MAXY - 13 ; j++)
         {
-            nb = rand()%400;
+            nb = rand()%325;
             switch (nb)
             {
                 case 5:
@@ -428,7 +429,7 @@ void setup_map (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR])
     {
         for (j = MINY + 13; j < MAXY - 13; j++)
         {
-            if(rand()%900 == 1)
+            if(rand()%850 == 1)
             {
                 maps[i][j] = POT;
             }
@@ -455,6 +456,22 @@ void setup_ia(int maps[][NB_BLOCS_HAUTEUR], Player links[NB_PLAYER])
         links[0].y = 50;
         links[1].x = 83;
         links[1].y = 50;
+    }
+    else if (NB_PLAYER == 3)
+    {
+        float z=0.2;
+        int rayon =22;
+        for (i=0;i<NB_PLAYER;i++)
+        {
+            links[i].points = 30 + rand()%3;
+            links[i].orientation = DOWN;
+            links[i].classement = -1;
+            links[i].item = 0;
+            links[i].x = CENTRE_CERCLE_X+5 + rayon*cosf(z*3.14);
+            links[i].y = CENTRE_CERCLE_Y+10 + rayon*sinf(z*3.14);
+            maps[links[i].x][links[i].y] = IA;
+            z+=0.66;
+        }
     }
     else if (NB_PLAYER == 26)
     {
@@ -597,7 +614,7 @@ int movePlayer (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *position
 
         }
 
-        if ((*currentCase) != IA && (*currentCase) != BOMBE_MAP && (*currentCase) != GANON && (*currentCase) != MUR)
+        if ((*currentCase) != IA && (*currentCase) != BOMBE_MAP && (*currentCase) != MUR)
             (*currentCase) = VIDE;
 
     }
@@ -607,24 +624,24 @@ int movePlayer (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *position
 void item(int maps[][NB_BLOCS_HAUTEUR], Player links[NB_PLAYER], int tours, Item bombes [100])
 {
     int i,j,l,z;
-    if(tours == 1){
+    if(tours == 2){
         for (i=0; i<100; i++){
             Item item;
             item.x = -1;
             item.y = -1;
             item.active = 0;
-            item.joueur = 0;
-          	bombes[i] = item;
+            item.joueur = -1;
+            bombes[i] = item;
         }
     }
-    for (i=0; i<NB_BLOCS_HAUTEUR + 20; i++)  // parcours les bombes sur la map
+    for (i=MINX+1 ; i<MAXX; i++)  // parcours les bombes sur la map
     {
-        for (j=0; j<NB_BLOCS_LARGEUR + 20; j++) // parcours les bombes sur la map
+        for (j=MINY+1; j<MAXY; j++) // parcours les bombes sur la map
         {
             if(maps[i][j] == BOMBE_MAP  || maps[i][j] == BOMBE_DEFLAG )
             {
-              	for (z=0; z<100; z++)
-              	{
+                for (z=0; z<100; z++)
+                {
                                                                             // Parcour tout le tableau de bombe
                     if(bombes[z].x == i && bombes[z].y == j)
                     {                                                       // a la recherche du struct de la bombe a ces meme coordonée
@@ -636,83 +653,80 @@ void item(int maps[][NB_BLOCS_HAUTEUR], Player links[NB_PLAYER], int tours, Item
                                 bombes[z].x = -1;
                                 bombes[z].y = -1;
                                 bombes[z].active = false;
-                                bombes[z].joueur = 0;
+                                bombes[z].joueur = -1;
                                 maps[i][j] = VIDE;
                                 bombes[z].tours = 0;
-                            }
-                            if (bombes[z].tours >= 15 && bombes[z].tours <= 17)// Si une bombe explose alors
-                            {
-                            	for (l=0; l<NB_PLAYER; l++)//pour tout les joueurs
-                           		{
 
+                            }else if (bombes[z].tours >= 15 && bombes[z].tours <= 17)// Si une bombe explose alors
+                            {
+                                for (l=0; l<NB_PLAYER; l++)//pour tout les joueurs
+                                {
                                     if (bombes[z].x - RAYON_BOMBE < links[l].x && links[l].x < bombes[z].x + RAYON_BOMBE && bombes[z].y + RAYON_BOMBE > links[l].y && links[l].y > bombes[z].y - RAYON_BOMBE && links[l].classement == - 1) //Dans le rayon de la deflagration
                                     {
                                         links[l].points -= DEGAT_BOMBE;// Mettre un degat au joueur
-                                      	if (links[bombes[z].joueur].classement == -1)
+                                        if (links[bombes[z].joueur].classement == -1)
                                         {
                                             links[bombes[z].joueur].points +=0;
                                         }
-
                                     }
-
-                            	}
-                            	maps[i][j] = BOMBE_DEFLAG;
-                            	bombes[z].tours+=1; // On incremente de 1 les tours pour faire exploser la bombe
+                                }
+                                maps[i][j] = BOMBE_DEFLAG;
+                                bombes[z].tours+=1; // On incremente de 1 les tours pour faire exploser la bombe
                             }
                             else
                             {
-                            	bombes[z].tours+=1; // On incremente de 1 les tours pour faire exploser la bombe
+                                bombes[z].tours+=1; // On incremente de 1 les tours pour faire exploser la bombe
                             }
                         }
                       break;
                     }
                 }
-            }// fin si
+            }
         }
     }
 }
 
 void damage(int maps[][NB_BLOCS_HAUTEUR], Player links[NB_PLAYER], int playernow)
 {
-    int j=0;
+int j=0;
     switch (links[playernow].orientation)
     {
         case UP :
             for (j=0; j<NB_PLAYER; j++)
             {
-                if(links[playernow].x - 1 < links[j].x && links[j].x < links[playernow].x  && links[playernow].y   > links[j].y && links[j].y > links[playernow].y - 3 && j != playernow && links[j].classement == -1 && links[j].bouclier != true)
-                {
+                if(links[j].x == links[playernow].x && links[j].y == links[playernow].y-1 && links[j].classement == -1 && links[j].bouclier != true){
                     links[j].points -= DEGAT_EPEE;
                     links[playernow].points += RECUP_RUBIS;
+                    break;
                 }
             }
             break;
         case DOWN :
             for (j=0; j<NB_PLAYER; j++)
             {
-                if(j != playernow && links[playernow].x < links[j].x && links[j].x < links[playernow].x + 2 && links[playernow].y + 1 < links[j].y && links[j].y < links[playernow].y + 7 && links[j].classement == -1 && links[j].bouclier != true)
-                {
+                if(links[j].x == links[playernow].x && links[j].y == links[playernow].y+1 && links[j].classement == -1 && links[j].bouclier != true){
                     links[j].points -= DEGAT_EPEE;
                     links[playernow].points += RECUP_RUBIS;
+                    break;
                 }
             }
             break;
         case LEFT :
             for (j=0; j<NB_PLAYER; j++)
             {
-                if(j != playernow && links[playernow].x - 2 < links[j].x && links[j].x < links[playernow].x && links[playernow].y  < links[j].y && links[j].y < links[playernow].y + 2 && links[j].classement == -1 && links[j].bouclier != true)
-                {
+                if(links[j].x == links[playernow].x-1 && links[j].y == links[playernow].y && links[j].classement == -1 && links[j].bouclier != true){
                     links[j].points -= DEGAT_EPEE;
                     links[playernow].points += RECUP_RUBIS;
+                    break;
                 }
             }
         case RIGHT :
             for (j=0; j<NB_PLAYER; j++)
             {
-                if(j != playernow && links[playernow].x < links[j].x && links[j].x < links[playernow].x + 4 && links[playernow].y  < links[j].y && links[j].y < links[playernow].y + 2 && links[j].classement == -1 && links[j].bouclier != true)
-                {
+                if(links[j].x == links[playernow].x+1 && links[j].y == links[playernow].y && links[j].classement == -1 && links[j].bouclier != true){
                     links[j].points -= DEGAT_EPEE;
                     links[playernow].points += RECUP_RUBIS;
+                    break;
                 }
             }
             break;
@@ -800,7 +814,7 @@ void ganon_move(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], Mix_Chunk *s_degat
         decaly = ganony - y;
         if (decalx == 0 && decaly == 0)
         {
-            links[bestlink].points -= 15;
+            links[bestlink].points -= 35;
             ganonx = LARGEUR_FENETRE / 2 - 50;
             ganony = HAUTEUR_FENETRE / 2 ;
             research = 1;
@@ -810,39 +824,8 @@ void ganon_move(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], Mix_Chunk *s_degat
     }
     position->x = ganonx;
     position->y = ganony;
-    switch(direction_ganon)
-    {
-        case 0:
-            if(maps[ganonx/TAILLE_BLOC][ganony/TAILLE_BLOC] != VIDE)
-            {
-                maps[ganonx - 10/TAILLE_BLOC][ganony/TAILLE_BLOC] = GANON;
-            }
-            break;
-
-        case 1:
-            if(maps[ganonx/TAILLE_BLOC][ganony/TAILLE_BLOC] != VIDE)
-            {
-                maps[ganonx + 10/TAILLE_BLOC][ganony/TAILLE_BLOC] = GANON;
-            }
-            break;
-
-        case 2:
-            if(maps[ganonx/TAILLE_BLOC][ganony/TAILLE_BLOC] != VIDE)
-            {
-                maps[ganonx/TAILLE_BLOC][ganony - 10/TAILLE_BLOC] = GANON;
-            }
-            break;
-
-        case 3:
-            if(maps[ganonx/TAILLE_BLOC][ganony/TAILLE_BLOC] != VIDE)
-            {
-                maps[ganonx/TAILLE_BLOC][ganony + 10/TAILLE_BLOC] = GANON;
-            }
-            break;
-
-    }
-
 }
+
 /*
 Fonction qui classe les joueurs.
 */
@@ -1109,7 +1092,7 @@ void setup_pictures (SDL_Surface *link[21],SDL_Surface *rupees[3],SDL_Surface *g
     ///
     bombes[0] = IMG_Load("pot2.bmp");
     SDL_SetColorKey(bombes[0], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
-    bombes[1] = IMG_Load("bombe.bmp");
+    bombes[1] = IMG_Load("bombe2.bmp");
     SDL_SetColorKey(bombes[1], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
     bombes[2] = IMG_Load("deflag.bmp");
     SDL_SetColorKey(bombes[2], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
