@@ -23,24 +23,24 @@ int main(int argc, char *argv[])
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER);
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS,1042) == -1)
     {
-        //fprintf(stderr, "Erreur SDL_mixer : %s\n", Mix_GetError());
+        fprintf(stderr, "Erreur SDL_mixer : %s\n", Mix_GetError());
         exit(EXIT_FAILURE);
     }
     if(TTF_Init() == -1)
     {
-        //fprintf(stderr, "Erreur TTF_Init : %s\n", TTF_GetError());
+        fprintf(stderr, "Erreur TTF_Init : %s\n", TTF_GetError());
         exit(EXIT_FAILURE);
     }
     if (SDL_Init(SDL_INIT_VIDEO) == -1)
     {
-        //fprintf(stderr, "Erreur SDL :%s\n", SDL_GetError());
+        fprintf(stderr, "Erreur SDL :%s\n", SDL_GetError());
         exit(EXIT_FAILURE);
     }
     SDL_WM_SetIcon(SDL_LoadBMP("icone-zelda.bmp"), NULL);
     screen = SDL_SetVideoMode(1920,HAUTEUR_FENETRE,COULEUR, SDL_FULLSCREEN | SDL_DOUBLEBUF);
     if (screen == NULL)
     {
-        //fprintf(stderr, "Impossible de charger video : %s\n", SDL_GetError());
+        fprintf(stderr, "Impossible de charger video : %s\n", SDL_GetError());
         exit(EXIT_FAILURE);
     }
     SDL_WM_SetCaption("The Legend Of Zelda: Battle Royale", NULL);
