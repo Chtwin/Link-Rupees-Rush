@@ -85,8 +85,8 @@ bool test_class(int maps[][NB_BLOCS_HAUTEUR], Player links[]);
 void item(int maps[][NB_BLOCS_HAUTEUR], Player links[], int tours, Item bombes [100]);
 /*
 Fonction qui renvoie un entier pour faire bouger l'IA
-*/
-/*
+ */
+ 
 int ia_1(int maps_ia[][NB_BLOCS_HAUTEUR], int x, int y, int points, int item, int tours)
 {
     if (rand()%25 == 0)
@@ -104,5 +104,5 @@ int ia_2(int maps_ia[][NB_BLOCS_HAUTEUR], int x, int y, int points, int item, in
     }
     return  0 + rand()%4;
 }
-*/
+
 #endif

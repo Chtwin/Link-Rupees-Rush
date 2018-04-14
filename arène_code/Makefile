@@ -1,4 +1,3 @@
-
 build-fake-ias:
 	g++ -ggdb -Wall *.cpp *.c `sdl-config --cflags --libs` -lSDL_mixer -lSDL_image -lSDL_ttf -o arene.exe
 
