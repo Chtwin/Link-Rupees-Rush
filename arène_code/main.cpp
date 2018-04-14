@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
     SDL_WM_SetIcon(SDL_LoadBMP("icone-zelda.bmp"), NULL);
 #ifdef DEBUG
     screen = SDL_SetVideoMode(1920,HAUTEUR_FENETRE,COULEUR, SDL_HWSURFACE | SDL_DOUBLEBUF);
-#else 
+#else
     screen = SDL_SetVideoMode(1920,HAUTEUR_FENETRE,COULEUR, SDL_FULLSCREEN | SDL_DOUBLEBUF);
 #endif
     if (screen == NULL)
@@ -130,6 +130,7 @@ int play (SDL_Surface* screen)
     {
         Mix_Volume(i,VOLUME);
     }
+
     SDL_Surface *rauru[4] = {NULL},*ruto[4] = {NULL},*sheik[4] = {NULL},*saria[4] = {NULL},*nayru[4] = {NULL},*oldman[4] = {NULL},*maple[4] = {NULL},*koume[4] = {NULL},*granma[4] = {NULL},*daruina[4] = {NULL},*skull[4] = {NULL}, *guard[16] = {NULL}, *link[21] = {NULL}, *rupees[3] = {NULL}, *zelda[6] = {NULL}, *bombes[10] = {NULL}, *ganon[5] ={NULL},*vide = NULL, *wall = NULL, *linkNow = NULL, *background = NULL, *scoreboard, *texte = NULL, *p_points = NULL, *ganonNow = NULL;
     TTF_Font *police = NULL, *police2 = NULL;
     Mix_Music *gerudo;
@@ -155,10 +156,10 @@ int play (SDL_Surface* screen)
     s_degat = Mix_LoadWAV("degat.wav");
     Mix_VolumeMusic(VOLUME);
     Mix_PlayMusic(gerudo, -1);
-    Player links[NB_PLAYER];
+    Player *links = (Player*) malloc(sizeof(Player) * NB_PLAYER);
     Item bombe[100];
 
-    setup_ia(maps, links);
+    setup_ia(maps, &links);
     ganonNow = ganon[DOWN];
 
     while (continuer)
@@ -318,6 +319,7 @@ int play (SDL_Surface* screen)
             SDL_Color couleurRouge = {255,0 , 0};
             position.x = (i > 16) ? 1675 : 1425;
             position.y = (i > 16) ? 400 + (i-17)*25 : 400 + i*25;
+
             if (links[i].points < 10)
             {
                 sprintf(score, "X 00%d        X %d \tJ%d",links[i].points,links[i].item, i+1);
@@ -330,7 +332,9 @@ int play (SDL_Surface* screen)
             {
                 sprintf(score, "X %d        X %d \tJ%d",links[i].points,links[i].item,i+1);
             }
+
             p_points = TTF_RenderText_Blended(police2, score, (links[i].classement == -1) ? couleurJaune : couleurRouge);
+
             SDL_BlitSurface(p_points, NULL, screen, &position);
         }
         if(tours > 80)
@@ -448,8 +452,9 @@ void setup_map (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR])
 /*
 Fonction qui initialise les paramètres des IAs.
 */
-void setup_ia(int maps[][NB_BLOCS_HAUTEUR], Player links[])
+void setup_ia(int maps[][NB_BLOCS_HAUTEUR], Player **links_ptr)
 {
+    Player *links = *links_ptr;
     fprintf(stdout, "setup_ia for %d IAS (hauteur=%d, largeur=%d)\n", NB_PLAYER, NB_BLOCS_HAUTEUR, \
         NB_BLOCS_LARGEUR);
     fflush(stdout);
@@ -467,6 +472,7 @@ void setup_ia(int maps[][NB_BLOCS_HAUTEUR], Player links[])
             links[i].classement = -1;
             maps[links[i].x][links[i].y] = IA;
         }
+
     }
     else if (NB_PLAYER == 3)
     {

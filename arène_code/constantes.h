@@ -80,13 +80,13 @@ int test_ia(int maps[][NB_BLOCS_HAUTEUR]);
 void damage(int maps[][NB_BLOCS_HAUTEUR], Player links[], int playernow);
 int test_ia(int maps[][NB_BLOCS_HAUTEUR], int x, int y, int points, int item, int bouclier, int orientation);
 void blit_items(int maps[][NB_BLOCS_HAUTEUR], SDL_Surface* screen, SDL_Surface* rupees[3], SDL_Surface *bombes[10]);
-void setup_ia(int maps[][NB_BLOCS_HAUTEUR], Player links[]);
+void setup_ia(int maps[][NB_BLOCS_HAUTEUR], Player *links[]);
 bool test_class(int maps[][NB_BLOCS_HAUTEUR], Player links[]);
 void item(int maps[][NB_BLOCS_HAUTEUR], Player links[], int tours, Item bombes [100]);
 /*
 Fonction qui renvoie un entier pour faire bouger l'IA
  */
- 
+
 int ia_1(int maps_ia[][NB_BLOCS_HAUTEUR], int x, int y, int points, int item, int tours)
 {
     if (rand()%25 == 0)
