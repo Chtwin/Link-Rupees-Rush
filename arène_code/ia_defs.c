@@ -6,6 +6,8 @@
 #include <SDL/SDL_ttf.h>
 #include <SDL/SDL_mixer.h>
 #include "constantes.h"
+#define MAX_IA 99
+int NB_PLAYER = 2; // calculé à la volée, ne pas modifier
 
 int ia_1(int maps_ia[][NB_BLOCS_HAUTEUR], int x, int y, int points, int item, int tours) __attribute__((weak));
 int ia_2(int maps_ia[][NB_BLOCS_HAUTEUR], int x, int y, int points, int item, int tours) __attribute__((weak));
@@ -132,15 +134,8 @@ int ia_97(int maps_ia[][NB_BLOCS_HAUTEUR], int x, int y, int points, int item, i
 int ia_98(int maps_ia[][NB_BLOCS_HAUTEUR], int x, int y, int points, int item, int tours) __attribute__((weak));
 int ia_99(int maps_ia[][NB_BLOCS_HAUTEUR], int x, int y, int points, int item, int tours) __attribute__((weak));
 
-#define MAX_IA 99
-int NB_PLAYER = 2;
-
-// typedef int (*ia_ptr)(int maps_ia[][NB_BLOCS_HAUTEUR], int, int, int, int, int);
-
 // cf macro @a
 ia_ptr IAS[MAX_IA] = {ia_1, ia_2, ia_3, ia_4, ia_5, ia_6, ia_7, ia_8, ia_9, ia_10, ia_11, ia_12, ia_13, ia_14, ia_15, ia_16, ia_17, ia_18, ia_19, ia_20, ia_21, ia_22, ia_23, ia_24, ia_25, ia_26, ia_27, ia_28, ia_29, ia_30, ia_31, ia_32, ia_33, ia_34, ia_35, ia_36, ia_37, ia_38, ia_39, ia_40, ia_41, ia_42, ia_43, ia_44, ia_45, ia_46, ia_47, ia_48, ia_49, ia_50, ia_51, ia_52, ia_53, ia_54, ia_55, ia_56, ia_57, ia_58, ia_59, ia_60, ia_61, ia_62, ia_63, ia_64, ia_65, ia_66, ia_67, ia_68, ia_69, ia_70, ia_71, ia_72, ia_73, ia_74, ia_75, ia_76, ia_77, ia_78, ia_79, ia_80, ia_81, ia_82, ia_83, ia_84, ia_85, ia_86, ia_87, ia_88, ia_89, ia_90, ia_91, ia_92, ia_93, ia_94, ia_95, ia_96, ia_97, ia_98, ia_99};
-
-ia_ptr *EFFECTIVE_IAS;
 
 ia_ptr * get_ias (int *player_count) {
   fprintf(stdout, "count_ias()\n");
