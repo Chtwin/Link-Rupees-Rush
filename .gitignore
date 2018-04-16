@@ -1,0 +1,7 @@
+bin/
+obj/
+desktop.ini
+arene.exe
+ias/
+.gdb_history
+peda-*.txt

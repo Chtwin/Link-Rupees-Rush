@@ -11,6 +11,7 @@ Jeu: Link Rupees Rush
 #include <SDL/SDL_mixer.h>
 #include <math.h>
 #include "constantes.h"
+// #define DEBUG
 
 int main(int argc, char *argv[])
 {
@@ -23,24 +24,28 @@ int main(int argc, char *argv[])
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER);
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS,1042) == -1)
     {
-        //fprintf(stderr, "Erreur SDL_mixer : %s\n", Mix_GetError());
+        fprintf(stderr, "Erreur SDL_mixer : %s\n", Mix_GetError());
         exit(EXIT_FAILURE);
     }
     if(TTF_Init() == -1)
     {
-        //fprintf(stderr, "Erreur TTF_Init : %s\n", TTF_GetError());
+        fprintf(stderr, "Erreur TTF_Init : %s\n", TTF_GetError());
         exit(EXIT_FAILURE);
     }
     if (SDL_Init(SDL_INIT_VIDEO) == -1)
     {
-        //fprintf(stderr, "Erreur SDL :%s\n", SDL_GetError());
+        fprintf(stderr, "Erreur SDL :%s\n", SDL_GetError());
         exit(EXIT_FAILURE);
     }
     SDL_WM_SetIcon(SDL_LoadBMP("icone-zelda.bmp"), NULL);
+#ifdef DEBUG
+    screen = SDL_SetVideoMode(1920,HAUTEUR_FENETRE,COULEUR, SDL_HWSURFACE | SDL_DOUBLEBUF);
+#else
     screen = SDL_SetVideoMode(1920,HAUTEUR_FENETRE,COULEUR, SDL_FULLSCREEN | SDL_DOUBLEBUF);
+#endif
     if (screen == NULL)
     {
-        //fprintf(stderr, "Impossible de charger video : %s\n", SDL_GetError());
+        fprintf(stderr, "Impossible de charger video : %s\n", SDL_GetError());
         exit(EXIT_FAILURE);
     }
     SDL_WM_SetCaption("The Legend Of Zelda: Battle Royale", NULL);
@@ -51,6 +56,7 @@ int main(int argc, char *argv[])
     intro = Mix_LoadMUS("intro_ost.flac");
     Mix_VolumeMusic(VOLUME);
     Mix_PlayMusic(intro, 1);
+    fprintf(stdout, "Starting\n");
     while (continuer)
     {
         SDL_WaitEvent(&event);
@@ -63,6 +69,7 @@ int main(int argc, char *argv[])
                 switch(event.key.keysym.sym)
                 {
                     case SDLK_SPACE:
+                        fprintf(stdout, "SPACE PRESSED\n");
                         Mix_FreeMusic(intro);
                         continuer = play(screen);
                         break;
@@ -88,6 +95,15 @@ Fonction qui lance le jeu:
 */
 int play (SDL_Surface* screen)
 {
+    fprintf(stdout, "play()\n");
+
+    ia_ptr *ias = get_ias(&NB_PLAYER);
+
+    if (NB_PLAYER < 2) {
+        fprintf(stderr, "Erreur : pas assez d'ia !\n");
+        exit(EXIT_FAILURE);
+    }
+
     int i = 0, continuer = 1, j = 0, k= 0, time = 0, lastTime = 0, stime = 0, mtime = 0, points = 0, tours = 0, bonus = 0;
     Mix_AllocateChannels(4);
     char temps[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
@@ -114,6 +130,7 @@ int play (SDL_Surface* screen)
     {
         Mix_Volume(i,VOLUME);
     }
+
     SDL_Surface *rauru[4] = {NULL},*ruto[4] = {NULL},*sheik[4] = {NULL},*saria[4] = {NULL},*nayru[4] = {NULL},*oldman[4] = {NULL},*maple[4] = {NULL},*koume[4] = {NULL},*granma[4] = {NULL},*daruina[4] = {NULL},*skull[4] = {NULL}, *guard[16] = {NULL}, *link[21] = {NULL}, *rupees[3] = {NULL}, *zelda[6] = {NULL}, *bombes[10] = {NULL}, *ganon[5] ={NULL},*vide = NULL, *wall = NULL, *linkNow = NULL, *background = NULL, *scoreboard, *texte = NULL, *p_points = NULL, *ganonNow = NULL;
     TTF_Font *police = NULL, *police2 = NULL;
     Mix_Music *gerudo;
@@ -139,20 +156,12 @@ int play (SDL_Surface* screen)
     s_degat = Mix_LoadWAV("degat.wav");
     Mix_VolumeMusic(VOLUME);
     Mix_PlayMusic(gerudo, -1);
-    Player links[NB_PLAYER];
+    Player *links = (Player*) malloc(sizeof(Player) * NB_PLAYER);
     Item bombe[100];
-    setup_ia(maps, links);
+
+    setup_ia(maps, &links);
     ganonNow = ganon[DOWN];
-    int (*ias[NB_PLAYER])(int[][NB_BLOCS_HAUTEUR], int, int, int, int, int);
-    ias[0] = ia_1;
-    ias[1] = ia_2;
-    if (NB_PLAYER>2)
-    {
-        for (i=2;i<NB_PLAYER;i++)
-        {
-            ias[i] = ia_2;
-        }
-    }
+
     while (continuer)
     {
         SDL_BlitSurface(background, NULL, screen, &positionBackground);
@@ -310,6 +319,7 @@ int play (SDL_Surface* screen)
             SDL_Color couleurRouge = {255,0 , 0};
             position.x = (i > 16) ? 1675 : 1425;
             position.y = (i > 16) ? 400 + (i-17)*25 : 400 + i*25;
+
             if (links[i].points < 10)
             {
                 sprintf(score, "X 00%d        X %d \tJ%d",links[i].points,links[i].item, i+1);
@@ -322,7 +332,9 @@ int play (SDL_Surface* screen)
             {
                 sprintf(score, "X %d        X %d \tJ%d",links[i].points,links[i].item,i+1);
             }
+
             p_points = TTF_RenderText_Blended(police2, score, (links[i].classement == -1) ? couleurJaune : couleurRouge);
+
             SDL_BlitSurface(p_points, NULL, screen, &position);
         }
         if(tours > 80)
@@ -440,11 +452,19 @@ void setup_map (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR])
 /*
 Fonction qui initialise les paramètres des IAs.
 */
-void setup_ia(int maps[][NB_BLOCS_HAUTEUR], Player links[NB_PLAYER])
+void setup_ia(int maps[][NB_BLOCS_HAUTEUR], Player **links_ptr)
 {
+    Player *links = *links_ptr;
+    fprintf(stdout, "setup_ia for %d IAS (hauteur=%d, largeur=%d)\n", NB_PLAYER, NB_BLOCS_HAUTEUR, \
+        NB_BLOCS_LARGEUR);
+    fflush(stdout);
     int i;
     if (NB_PLAYER == 2)
     {
+        links[0].x = 43;
+        links[0].y = 50;
+        links[1].x = 83;
+        links[1].y = 50;
         for (i=0;i<NB_PLAYER;i++)
         {
             links[i].points = 25 + rand()%3;
@@ -452,10 +472,7 @@ void setup_ia(int maps[][NB_BLOCS_HAUTEUR], Player links[NB_PLAYER])
             links[i].classement = -1;
             maps[links[i].x][links[i].y] = IA;
         }
-        links[0].x = 43;
-        links[0].y = 50;
-        links[1].x = 83;
-        links[1].y = 50;
+
     }
     else if (NB_PLAYER == 3)
     {
@@ -621,7 +638,7 @@ int movePlayer (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *position
     return bonus;
 }
 
-void item(int maps[][NB_BLOCS_HAUTEUR], Player links[NB_PLAYER], int tours, Item bombes [100])
+void item(int maps[][NB_BLOCS_HAUTEUR], Player links[], int tours, Item bombes [100])
 {
     int i,j,l,z;
     if(tours == 2){
@@ -686,7 +703,7 @@ void item(int maps[][NB_BLOCS_HAUTEUR], Player links[NB_PLAYER], int tours, Item
     }
 }
 
-void damage(int maps[][NB_BLOCS_HAUTEUR], Player links[NB_PLAYER], int playernow)
+void damage(int maps[][NB_BLOCS_HAUTEUR], Player links[], int playernow)
 {
 int j=0;
     switch (links[playernow].orientation)
@@ -736,7 +753,7 @@ int j=0;
 /*
 Fonction qui permet à Ganon de se déplacer.
 */
-void ganon_move(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], Mix_Chunk *s_degat, Player links[NB_PLAYER], SDL_Rect *position, int tours)
+void ganon_move(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], Mix_Chunk *s_degat, Player links[], SDL_Rect *position, int tours)
 {
     int i = 0 , direction_ganon;
     static int research = 1;
@@ -829,7 +846,7 @@ void ganon_move(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], Mix_Chunk *s_degat
 /*
 Fonction qui classe les joueurs.
 */
-bool test_class(int maps[][NB_BLOCS_HAUTEUR], Player links[NB_PLAYER])
+bool test_class(int maps[][NB_BLOCS_HAUTEUR], Player links[])
 {
     int i = 0;
     static int num = NB_PLAYER;
@@ -862,7 +879,7 @@ bool test_class(int maps[][NB_BLOCS_HAUTEUR], Player links[NB_PLAYER])
 /*
 Fonction qui détérmine quand il y a un vainqeur.
 */
-int win(bool survivant, SDL_Surface* screen, Mix_Music *gerudo, Player links[NB_PLAYER], int continuer, int tours)
+int win(bool survivant, SDL_Surface* screen, Mix_Music *gerudo, Player links[], int continuer, int tours)
 {
     if (survivant == true || tours == 2000)
     {
