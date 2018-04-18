@@ -10,23 +10,19 @@ Jeu: Link Rupees Rush
 #include <SDL/SDL_ttf.h>
 #include <SDL/SDL_mixer.h>
 #include <math.h>
-#include "constantes.h"
-
 // #define TOURNOIS // Cette valeur est à utiliser en conditions réelles de tournois, seulement le jour J
 // #define DEBUG // Permet de ne pas avoir le jeu en plein écran
+#include "constantes.h"
 
 #ifdef TOURNOIS
 
-#include "./ias/ia_3.c"
-#include "./ias/ia_9.c"
+#include "ias/ia_3.cpp"
+#include "ias/ia_9.cpp"
 
 #define NB_PLAYER 2
 #define IAS {ia_3, ia_9}
 
 #endif
-
-
-
 
 int main(int argc, char *argv[])
 {
