@@ -665,49 +665,56 @@ void item(int maps[][NB_BLOCS_HAUTEUR], Player links[], int tours, Item bombes [
     {
         for (j=MINY+1; j<MAXY; j++) // parcours les bombes sur la map
         {
-            if(maps[i][j] == BOMBE_MAP  || maps[i][j] == BOMBE_DEFLAG )
+            if(maps[i][j] != BOMBE_MAP  && maps[i][j] != BOMBE_DEFLAG)
             {
-                for (z=0; z<100; z++)
+                continue;
+            }
+            for (z=0; z<100; z++)
+            {
+                // Parcour tout le tableau de bombe
+                // a la recherche du struct de la bombe a ces meme coordonée
+                if(bombes[z].x != i || bombes[z].y != j || bombes[z].active == false)
+                { 
+                    continue;
+                }
+                //si la bombe est active alors
+                if(bombes[z].tours > 17)
                 {
-                                                                            // Parcour tout le tableau de bombe
-                    if(bombes[z].x == i && bombes[z].y == j)
-                    {                                                       // a la recherche du struct de la bombe a ces meme coordonée
-                         if (bombes[z].active==true)//si la bombe est active alors
-                         {
-                            if(bombes[z].tours > 17)
-                            {
-                                //Remise a 0 de la bombe
-                                bombes[z].x = -1;
-                                bombes[z].y = -1;
-                                bombes[z].active = false;
-                                bombes[z].joueur = -1;
-                                maps[i][j] = VIDE;
-                                bombes[z].tours = 0;
+                    //Remise a 0 de la bombe
+                    bombes[z].x = -1;
+                    bombes[z].y = -1;
+                    bombes[z].active = false;
+                    bombes[z].joueur = -1;
+                    maps[i][j] = VIDE;
+                    bombes[z].tours = 0;
 
-                            }else if (bombes[z].tours >= 15 && bombes[z].tours <= 17)// Si une bombe explose alors
+                }
+                else if (bombes[z].tours >= 15)// Si une bombe explose alors
+                {
+                    for (l=0; l<NB_PLAYER; l++)//pour tout les joueurs
+                    {
+                        int dans_rayon_g = bombes[z].x - RAYON_BOMBE < links[l].x;
+                        int dans_rayon_d = links[l].x < bombes[z].x + RAYON_BOMBE;
+                        int dans_rayon_b = bombes[z].y + RAYON_BOMBE > links[l].y;
+                        int dans_rayon_h = links[l].y > bombes[z].y - RAYON_BOMBE;
+                        if (dans_rayon_g && dans_rayon_b && dans_rayon_d && dans_rayon_h && \
+                                                      links[l].classement == - 1) //Dans le rayon de la deflagration
+                        {
+                            links[l].points -= DEGAT_BOMBE;// Mettre un degat au joueur
+                            if (links[bombes[z].joueur].classement == -1)
                             {
-                                for (l=0; l<NB_PLAYER; l++)//pour tout les joueurs
-                                {
-                                    if (bombes[z].x - RAYON_BOMBE < links[l].x && links[l].x < bombes[z].x + RAYON_BOMBE && bombes[z].y + RAYON_BOMBE > links[l].y && links[l].y > bombes[z].y - RAYON_BOMBE && links[l].classement == - 1) //Dans le rayon de la deflagration
-                                    {
-                                        links[l].points -= DEGAT_BOMBE;// Mettre un degat au joueur
-                                        if (links[bombes[z].joueur].classement == -1)
-                                        {
-                                            links[bombes[z].joueur].points +=0;
-                                        }
-                                    }
-                                }
-                                maps[i][j] = BOMBE_DEFLAG;
-                                bombes[z].tours+=1; // On incremente de 1 les tours pour faire exploser la bombe
-                            }
-                            else
-                            {
-                                bombes[z].tours+=1; // On incremente de 1 les tours pour faire exploser la bombe
+                                links[bombes[z].joueur].points +=0;
                             }
                         }
-                      break;
                     }
+                    maps[i][j] = BOMBE_DEFLAG;
+                    bombes[z].tours+=1; // On incremente de 1 les tours pour faire exploser la bombe
                 }
+                else
+                {
+                    bombes[z].tours+=1; // On incremente de 1 les tours pour faire exploser la bombe
+                }
+                break; // on n'explose qu'une seule bombe par tour
             }
         }
     }
