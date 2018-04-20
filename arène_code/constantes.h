@@ -23,12 +23,12 @@
 #define DEGAT_BOMBE 75
 #define RECUP_DEGAT_BOMBE 25
 #define RAYON_BOMBE 10
+#ifndef TOURNOIS
+#define NB_PLAYER 2 // modifiez la quantité de joueur à votre guise
+#define IAS {ia_1, ia_2}
+#endif
 
 typedef int (*ia_ptr)(int maps_ia[][NB_BLOCS_HAUTEUR], int, int, int, int, int);
-extern int NB_PLAYER;
-ia_ptr* get_ias(int *player_count);
-
-
 
 /*
     Ajout de la structure propre à chaque IA
@@ -80,9 +80,11 @@ int test_ia(int maps[][NB_BLOCS_HAUTEUR]);
 void damage(int maps[][NB_BLOCS_HAUTEUR], Player links[], int playernow);
 int test_ia(int maps[][NB_BLOCS_HAUTEUR], int x, int y, int points, int item);
 void blit_items(int maps[][NB_BLOCS_HAUTEUR], SDL_Surface* screen, SDL_Surface* rupees[3], SDL_Surface *bombes[10]);
-void setup_ia(int maps[][NB_BLOCS_HAUTEUR], Player *links[]);
+void setup_ia(int maps[][NB_BLOCS_HAUTEUR], Player **links);
 bool test_class(int maps[][NB_BLOCS_HAUTEUR], Player links[]);
 void item(int maps[][NB_BLOCS_HAUTEUR], Player links[], int tours, Item bombes [100]);
+
+#ifndef TOURNOIS
 /*
 Fonction qui renvoie un entier pour faire bouger l'IA
  */
@@ -104,5 +106,6 @@ int ia_2(int maps_ia[][NB_BLOCS_HAUTEUR], int x, int y, int points, int item, in
     }
     return  0 + rand()%4;
 }
+#endif
 
 #endif

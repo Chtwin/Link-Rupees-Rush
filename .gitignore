@@ -2,6 +2,6 @@ bin/
 obj/
 desktop.ini
 arene.exe
-ias/
 .gdb_history
+*.c
 peda-*.txt

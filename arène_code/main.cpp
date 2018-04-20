@@ -10,8 +10,19 @@ Jeu: Link Rupees Rush
 #include <SDL/SDL_ttf.h>
 #include <SDL/SDL_mixer.h>
 #include <math.h>
+// #define TOURNOIS // Cette valeur est à utiliser en conditions réelles de tournois, seulement le jour J
+// #define DEBUG // Permet de ne pas avoir le jeu en plein écran
 #include "constantes.h"
-// #define DEBUG
+
+#ifdef TOURNOIS
+
+#include "ias/ia_3.cpp"
+#include "ias/ia_9.cpp"
+
+#define NB_PLAYER 2
+#define IAS {ia_3, ia_9}
+
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -97,7 +108,7 @@ int play (SDL_Surface* screen)
 {
     fprintf(stdout, "play()\n");
 
-    ia_ptr *ias = get_ias(&NB_PLAYER);
+    ia_ptr ias[NB_PLAYER] = IAS;
 
     if (NB_PLAYER < 2) {
         fprintf(stderr, "Erreur : pas assez d'ia !\n");

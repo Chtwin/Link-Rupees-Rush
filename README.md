@@ -1,5 +1,11 @@
 # Nouveautés & Annonces
 
+## 18/04:
+
+Corrections de plusieurs bugs et préparation de l'arène pour le jour des combats.
+
+Note: l'installation de l'arène sous windows est maintenant aussi simple que de télécharger le zip et d'ouvrir le projet avec le prot-jeu.cbp disponible dans le dossier arène\_code.
+
 ### 29/03:
 
 Corrections de plusieurs bugs et mise à jour des règles avec les bonnes stats.
