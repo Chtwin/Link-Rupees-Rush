@@ -11,7 +11,7 @@ Jeu: Link Rupees Rush
 #include <SDL/SDL_mixer.h>
 #include <math.h>
 // #define TOURNOIS // Cette valeur est à utiliser en conditions réelles de tournois, seulement le jour J
-// #define DEBUG // Permet de ne pas avoir le jeu en plein écran
+#define DEBUG // Permet de ne pas avoir le jeu en plein écran
 #include "constantes.h"
 
 #ifdef TOURNOIS
@@ -350,7 +350,7 @@ int play (SDL_Surface* screen)
         }
         if(tours > 80)
         {
-          	item(maps,links,tours,bombe); //S'execute tout les tours
+            item(maps,links,tours,bombe); //S'execute tout les tours
         }
         sprintf(score, "%s %d","Tours:",tours);
         p_points = TTF_RenderText_Blended(police, score, couleurNoire);
@@ -761,94 +761,77 @@ int j=0;
     }
 }
 
+void ganon_move_internal(Player *link, int *ganonx, int *ganony)
+{
+    int x = link->x * TAILLE_BLOC;
+    int y = link->y * TAILLE_BLOC;
+    int decalx = *ganonx - x;
+    int decaly = *ganony - y;
+    if (decalx > 0)
+    {
+        *ganonx -= decalx > 10 ? 10 : decalx;
+    }
+    else if (decalx < 0)
+    {
+        *ganonx += decalx < -10 ? 10 : decalx;
+    }
+
+    if (decaly > 0)
+    {
+        *ganony -= decaly > 10 ? 10 : decaly;
+    }
+    else if (decaly < 0)
+    {
+        *ganony += decaly < -10 ? 10 : decaly;
+    }
+}
+
 /*
 Fonction qui permet à Ganon de se déplacer.
 */
 void ganon_move(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], Mix_Chunk *s_degat, Player links[], SDL_Rect *position, int tours)
 {
-    int i = 0 , direction_ganon;
+    int i = 0; // , direction_ganon;
     static int research = 1;
     static int bestlink = 0;
     static int ganonx = LARGEUR_FENETRE / 2 - 50;
     static int ganony = HAUTEUR_FENETRE / 2;
     static int delay = 180;
-    if (tours > delay)
+    if (tours <= delay)
     {
-        if (research == 1)
-        {
-            for(i=0;i<NB_PLAYER;i++)
-            {
-                if(links[bestlink].points < links[i].points)
-                {
-                    bestlink = i;
-                }
-            }
-            research = 0;
-        }
-        int x = links[bestlink].x * TAILLE_BLOC;
-        int y = links[bestlink].y * TAILLE_BLOC;
-        int decalx = ganonx - x, decaly = ganony - y;
-        if (decalx > 0)
-        {
-            direction_ganon = 0;    // aller a gauche
-            if (decalx>10)
-            {
-                ganonx -= 10;
+        position->x = ganonx;
+        position->y = ganony;
+        return;
+    }
 
-            }
-            else
+    if (research == 1)
+    {
+        for(i = 0; i < NB_PLAYER; i++)
+        {
+            if(links[bestlink].points < links[i].points)
             {
-                ganonx -=decalx;
+                bestlink = i;
             }
         }
-        else if (decalx < 0)
-        {
-            direction_ganon = 1;  // aller a droite
-            if (decalx > -10)
-            {
-                ganonx +=decalx;
+        research = 0;
+    }
 
-            }
-            else
-            {
-                ganonx += 10;
-            }
-        }
-        if (decaly > 0)
-        {
-            direction_ganon = 2;   // aller en haut
-            if (decaly < 10)
-            {
-                ganony -=decaly;
-            }
-            else
-            {
-                ganony -= 10;
-            }
-        }
-        else if (decaly < 0)
-        {
-            direction_ganon = 3;  // aller en bas
-            if (decaly > -10)
-            {
-                ganony +=decaly;
-            }
-            else
-            {
-                ganony += 10;
-            }
-        }
-        decalx = ganonx - x;
-        decaly = ganony - y;
-        if (decalx == 0 && decaly == 0)
-        {
-            links[bestlink].points -= 35;
-            ganonx = LARGEUR_FENETRE / 2 - 50;
-            ganony = HAUTEUR_FENETRE / 2 ;
-            research = 1;
-            Mix_PlayChannel(2, s_degat, 0);
-            delay = tours + 160;
-        }
+    ganon_move_internal(&links[bestlink], &ganonx, &ganony);
+
+    int x = links[bestlink].x * TAILLE_BLOC;
+    int y = links[bestlink].y * TAILLE_BLOC;
+    int decalx = ganonx - x;
+    int decaly = ganony - y;
+
+    if (decalx == 0 && decaly == 0)
+    {
+        printf("dégats: %d\n", links[bestlink].points);
+        links[bestlink].points -= 35;
+        ganonx = LARGEUR_FENETRE / 2 - 50;
+        ganony = HAUTEUR_FENETRE / 2 ;
+        research = 1;
+        Mix_PlayChannel(2, s_degat, 0);
+        delay = tours + 160;
     }
     position->x = ganonx;
     position->y = ganony;
