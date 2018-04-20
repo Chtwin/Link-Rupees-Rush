@@ -481,6 +481,7 @@ void setup_ia(int maps[][NB_BLOCS_HAUTEUR], Player **links_ptr)
             links[i].points = 25 + rand()%3;
             links[i].orientation = DOWN;
             links[i].classement = -1;
+            links[i].item = 0;
             maps[links[i].x][links[i].y] = IA;
         }
 
@@ -524,6 +525,7 @@ void setup_ia(int maps[][NB_BLOCS_HAUTEUR], Player **links_ptr)
             links[i].points = 20;
             links[i].orientation = DOWN;
             links[i].classement = -1;
+            links[i].item = 0;
             links[i].x = 20 + rand()%80;
             links[i].y = 30 + rand()%40;
             maps[links[i].x][links[i].y] = IA;
