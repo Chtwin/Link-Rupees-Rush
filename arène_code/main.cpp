@@ -270,27 +270,24 @@ int play (SDL_Surface* screen)
                                 links[i].bouclier = true;
                                 break;
                             case BOMBE:
-                                if (tours > 80)
+                                if (tours > 80 && links[i].item > 0)
                                 {
-                                    if (links[i].item >0)
-                                    {
-                                        links[i].item--;
+                                    links[i].item--;
 
-                                        if(links[i].y != NB_BLOCS_HAUTEUR-1)
+                                    if(links[i].y != NB_BLOCS_HAUTEUR-1)
+                                    {
+                                        int b;
+                                        for(b=0; b<100; b++)
                                         {
-                                            int b;
-                                            for(b=0; b<100; b++)
+                                            if(bombe[b].active == 0)
                                             {
-                                                if(bombe[b].active == 0)
-                                                {
-                                                    bombe[b].x = links[i].x;
-                                                    bombe[b].y = links[i].y + 1;
-                                                    bombe[b].active = 1;
-                                                    bombe[b].joueur = i;
-                                                    bombe[b].tours = 0;
-                                                    maps[links[i].x][links[i].y + 1] = BOMBE_MAP;
-                                                    break;
-                                                }
+                                                bombe[b].x = links[i].x;
+                                                bombe[b].y = links[i].y + 1;
+                                                bombe[b].active = 1;
+                                                bombe[b].joueur = i;
+                                                bombe[b].tours = 0;
+                                                maps[links[i].x][links[i].y + 1] = BOMBE_MAP;
+                                                break;
                                             }
                                         }
                                     }
