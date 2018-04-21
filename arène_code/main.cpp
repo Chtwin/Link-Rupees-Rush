@@ -703,7 +703,7 @@ void item(int maps[][NB_BLOCS_HAUTEUR], Player links[], int tours, Item bombes [
                             links[l].points -= DEGAT_BOMBE;// Mettre un degat au joueur
                             if (links[bombes[z].joueur].classement == -1)
                             {
-                                links[bombes[z].joueur].points +=0;
+                                links[bombes[z].joueur].points +=RECUP_DEGAT_BOMBE;
                             }
                         }
                     }
@@ -1074,6 +1074,8 @@ void blit_items(int maps[][NB_BLOCS_HAUTEUR], SDL_Surface* screen, SDL_Surface* 
                     SDL_BlitSurface(bombes[1], NULL, screen, &position);
                     break;
                 case BOMBE_DEFLAG :
+                    position.x -= 31;
+                    position.y -= 31;
                     SDL_BlitSurface(bombes[2], NULL, screen, &position);
                     break;
             }
@@ -1111,7 +1113,7 @@ void setup_pictures (SDL_Surface *link[21],SDL_Surface *rupees[3],SDL_Surface *g
     SDL_SetColorKey(bombes[0], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
     bombes[1] = IMG_Load("bombe2.bmp");
     SDL_SetColorKey(bombes[1], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
-    bombes[2] = IMG_Load("deflag.bmp");
+    bombes[2] = IMG_Load("last_deflag.bmp");
     SDL_SetColorKey(bombes[2], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
     ///
     rupees[GREEN_RUPEE] = IMG_Load("green_rupee1.bmp");
