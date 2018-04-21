@@ -3,6 +3,7 @@
 ## 21/04:
 
 Correctif de la compilation du logiciel sous windows.
+Correction de la bombe et réorganistion du classement.
 
 ## 18/04:
 
@@ -58,7 +59,7 @@ le dossier "arène_code"**(Il faut bien inclure les images et non tout le dossie
 # Règles du jeu
 **Les XX symbolisent des nombres ou pourcentages pas encore établi, nous décideront des valeurs finales en fonction des premiers tests d'IA**
 ### Le 1vs1:
-En début de partie, les deux IA se retrouveront face à face au centre de l'arène avec une épée et un bouclier chacune, ainsi que 20 rubis chacun. Mais il aura un bonus de 1 à 2 rubis supplémentaires aléatoirement pour chaque joueur. Les déplacements dans les 4 directions sont possibles dès le début de la partie. Au bout de 150 tours des rubis apparaîtront partout dans l'arène et les IAs ramasseront automatiquement les rubis en passant simplement dessus. Au bout de 80 tours les IAs pourront s'assener des coups d'épée entre elles. Lorqu'une IA reçoit un coup d'épée elle perd 5 rubis et l'IA qui a asséné le coup reçoit 3 rubis. L'IA peut égalment parer les coups d'épée à l'aide de son bouclier. Ensuite toutes les 150 tours des rubis ainsi qu'un pot vont apparaître au centre de l'arène. Le pot se casse automatiquement quand vous marchez dessus, le pot contient soit des rubis soit une bombe. Si vous ramassez la bombe, elle est stocké dans un slot de votre inventaire, vous pourrez alors la poser quand vous le souhaitez. Après que la bombe soit posé, elle explosera au bout de 2 tours et les IAs se trouvant dans un rayon de 10 cases perdont 75 rubis et l'IA ayant posé la bombe recupére 25 rubis par tête. Une fois 250 tours passés Ganon (une IA) va apparaître au centre de l'arène, il poursuivra l'IA qui a le plus de rubis et lui donnera un coup d'épée qui enlevera 20 rubis. Même si l'IA n'a plus le plus de rubis et qu'il a été ciblé par Ganon, ce-dernier lui assenera tout de même le coup d'épée (comme la carapace bleu dans mario kart). Une fois le coup asséné, Ganon retourne au centre de la carte et pourra se redéplacer et redonner son coup au bout de XX secondes. Si le nombre de rubis d'une IA tombe à 0 ou moins il meurt et le survivant se retrouve vainqueur.**/!\ Ganon ne peut pas tuer les IAs, leur nombre de rubis tombera seulement à 1 pendant les 1000 premiers tours**. A la fin du temps imparti, l'IA qui a le plus de rubis gagne. En cas d'égalité l'IA qui est classé avant gagne.
+En début de partie, les deux IA se retrouveront face à face au centre de l'arène avec une épée et un bouclier chacune, ainsi que 25 rubis chacun plus 1 à 3 rubis qui seront donnés de façon aléatoire. Mais il aura un bonus de 1 à 2 rubis supplémentaires aléatoirement pour chaque joueur. Les déplacements dans les 4 directions sont possibles dès le début de la partie. Au bout de 150 tours des rubis apparaîtront partout dans l'arène et les IAs ramasseront automatiquement les rubis en passant simplement dessus. Au bout de 80 tours les IAs pourront s'assener des coups d'épée entre elles. Lorqu'une IA reçoit un coup d'épée elle perd 5 rubis et l'IA qui a asséné le coup reçoit 3 rubis. L'IA peut égalment parer les coups d'épée à l'aide de son bouclier. Ensuite toutes les 150 tours des rubis ainsi qu'un pot vont apparaître au centre de l'arène. Le pot se casse automatiquement quand vous marchez dessus, le pot contient soit des rubis soit une bombe. Si vous ramassez la bombe, elle est stocké dans un slot de votre inventaire, vous pourrez alors la poser quand vous le souhaitez. Après que la bombe soit posé, elle explosera au bout de 2 tours et les IAs se trouvant dans un rayon de 10 cases perdont 75 rubis et l'IA ayant posé la bombe recupére 35 rubis par tête. Une fois 250 tours passés Ganon (une IA) va apparaître au centre de l'arène, il poursuivra l'IA qui a le plus de rubis et lui donnera un coup d'épée qui enlevera 20 rubis. Même si l'IA n'a plus le plus de rubis et qu'il a été ciblé par Ganon, ce-dernier lui assenera tout de même le coup d'épée (comme la carapace bleu dans mario kart). Une fois le coup asséné, Ganon retourne au centre de la carte et pourra se redéplacer et redonner son coup au bout de 150 tours. Si le nombre de rubis d'une IA tombe à 0 ou moins il meurt et le survivant se retrouve vainqueur.**/!\ Ganon ne peut pas tuer les IAs, leur nombre de rubis tombera seulement à 1 pendant les 1000 premiers tours**. A la fin du temps imparti, l'IA qui a le plus de rubis gagne. En cas d'égalité l'IA qui est classé avant gagne.
 ### A 26 IAs:
 Les règles restent fondamentalement les mêmes mise à part celles-ci:<br/>
 - les IAs vont debuter en cercle au centre de l'arène.<br/>
@@ -78,12 +79,12 @@ Les actions possibles citées ci-dessus sont: se déplacer, frapper, parer, pose
 ## Options lors d'un tour.
 Lors de votre tour vous pouvez réaliser une de ces actions, vous déplacer dans les 4 directions(haut, bas, gauche, droite), donner un coup d'épée dans la direction dans laquelle regarde votre personnage (ce qui permet de mettre des dégâts à une autre IA ou bien de casser un pot), parer un coup si une IA tente de vous assener un coup ou bien si vous êtes dans l'explosion d'une bombe(vous pouvez parer un nombre limité de fois dans la partie), poser une bombe qui explosera au bout d'un certain temps dans un rayon prédéfini.<br/>
 Voici la liste de ce qui est opérationnel: <br/>
-- La carte de l'arène 					   : Fonctionnel.
-- Données de votre IA (et des autres?)	   : Fonctionnel.
-- Déplacements (haut, bas, gauche, droite) : Fonctionnel.
-- frapper                                  : Fonctionne mais n'est pas totalement fini(reste des bugs).<br/>
+- La carte de l'arène 					   : Fonctionnel.<br/>
+- Données de votre IA (et des autres?)	   : Fonctionnel.<br/>
+- Déplacements (haut, bas, gauche, droite) : Fonctionnel.<br/>
+- frapper                                  : Fonctionnel.<br/>
 - parer                                    : Fonctionnel.<br/>
-- poser une bombe						     : Fonctionnel mais les bombes n'explosent pas encore.<br/>
+- poser une bombe						     :  Fonctionnel.<br/>
 - Ganon (IA du jeu)						   : Fonctionnel.<br/>
 
 ## Coder l'IA
