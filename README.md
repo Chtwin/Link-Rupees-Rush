@@ -1,5 +1,9 @@
 # Nouveautés & Annonces
 
+## 21/04:
+
+Correctif de la compilation du logiciel sous windows.
+
 ## 18/04:
 
 Corrections de plusieurs bugs et préparation de l'arène pour le jour des combats.
