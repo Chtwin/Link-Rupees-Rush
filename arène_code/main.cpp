@@ -936,7 +936,7 @@ int win(bool survivant, SDL_Surface* screen, Mix_Music *gerudo, Player links[], 
         for(i=0;i<NB_PLAYER;i++)
         {
             position.x = 150;
-            position.y = 180 + 22*i;
+            position.y = 180 + 22*links[i].classement - 1;
             sprintf(winner, "J%d a %d points et est a la %d position",i+1,links[i].points,links[i].classement);
             texte = TTF_RenderText_Blended(police, winner, couleurJaune);
             SDL_BlitSurface(texte, NULL, screen, &position);
