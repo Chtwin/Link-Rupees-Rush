@@ -775,20 +775,19 @@ void ganon_move_internal(Player *link, int *ganonx, int *ganony)
     int decaly = *ganony - y;
     if (decalx > 0)
     {
-        *ganonx -= decalx > 10 ? 10 : decalx;
+        *ganonx -= decalx >= 10 ? 10 : decalx;
     }
     else if (decalx < 0)
     {
-        *ganonx += decalx < -10 ? 10 : decalx;
+        *ganonx += decalx <= -10 ? 10 : decalx;
     }
-
     if (decaly > 0)
     {
-        *ganony -= decaly > 10 ? 10 : decaly;
+        *ganony -= decaly >= 10 ? 10 : decaly;
     }
     else if (decaly < 0)
     {
-        *ganony += decaly < -10 ? 10 : decaly;
+        *ganony += decaly <= -10 ? 10 : decaly;
     }
 }
 
