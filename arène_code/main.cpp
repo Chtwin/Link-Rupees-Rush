@@ -16,10 +16,11 @@ Jeu: Link Rupees Rush
 
 #ifdef TOURNOIS
 
+#define NB_PLAYER 2
+
 #include "ias/ia_3.cpp"
 #include "ias/ia_9.cpp"
 
-#define NB_PLAYER 2
 #define IAS {ia_3, ia_9}
 
 #endif
