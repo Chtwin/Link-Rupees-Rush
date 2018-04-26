@@ -919,7 +919,7 @@ int win(bool survivant, SDL_Surface* screen, Mix_Music *gerudo, Player links[], 
         Mix_PauseMusic();
         char winner[35] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
         TTF_Font *police = NULL;
-        police = TTF_OpenFont("triforce.ttf", 22);
+        police = TTF_OpenFont("triforce.ttf", 40);
         SDL_Color couleurJaune = {255, 255, 0};
         SDL_Surface *background = NULL, *texte = NULL;
         SDL_Rect positionBackground, position;
