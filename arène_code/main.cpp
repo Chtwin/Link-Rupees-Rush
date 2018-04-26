@@ -896,7 +896,7 @@ int win(bool survivant, SDL_Surface* screen, Mix_Music *gerudo, Player links[], 
                 }
                 else if (links[i].classement < max && links[i].classement>0) max = links[i].classement;
             }
-            //max--;
+            max--;
             for (i=0; i<nb_survive; i++)
             {
                 for(j=i; j<nb_survive; j++)
