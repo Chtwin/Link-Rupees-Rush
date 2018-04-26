@@ -928,15 +928,23 @@ int win(bool survivant, SDL_Surface* screen, Mix_Music *gerudo, Player links[], 
         positionBackground.y = 0;
         position.x = 110;
         position.y = 110;
-        background = IMG_Load("score.bmp");
+        background = IMG_Load("score_b.bmp");
         SDL_BlitSurface(background, NULL, screen, &positionBackground);
         sprintf(winner, "Classement:");
         texte = TTF_RenderText_Blended(police, winner, couleurJaune);
         SDL_BlitSurface(texte, NULL, screen, &position);
         for(i=0;i<NB_PLAYER;i++)
         {
-            position.x = 150;
-            position.y = 180 + 22*links[i].classement - 1;
+            if (links[i].classement < 15)
+            {
+                position.x = 150;
+                position.y = 180 + 45*links[i].classement - 1;
+            }
+            else
+            {
+                position.x = 800;
+                position.y = 180 + 45*links[i].classement - 1 - 15*45;
+            }
             sprintf(winner, "J%d a %d points et est a la %d position",i+1,links[i].points,links[i].classement);
             texte = TTF_RenderText_Blended(police, winner, couleurJaune);
             SDL_BlitSurface(texte, NULL, screen, &position);
