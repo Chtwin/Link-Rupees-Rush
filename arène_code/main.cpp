@@ -142,8 +142,7 @@ int play (SDL_Surface* screen)
     {
         Mix_Volume(i,VOLUME);
     }
-
-    SDL_Surface *rauru[4] = {NULL},*ruto[4] = {NULL},*sheik[4] = {NULL},*saria[4] = {NULL},*nayru[4] = {NULL},*oldman[4] = {NULL},*maple[4] = {NULL},*koume[4] = {NULL},*granma[4] = {NULL},*daruina[4] = {NULL},*skull[4] = {NULL}, *guard[16] = {NULL}, *link[21] = {NULL}, *rupees[3] = {NULL}, *zelda[6] = {NULL}, *bombes[10] = {NULL}, *ganon[5] ={NULL},*vide = NULL, *wall = NULL, *linkNow = NULL, *background = NULL, *scoreboard, *texte = NULL, *p_points = NULL, *ganonNow = NULL;
+    SDL_Surface *box = NULL, *rauru[4] = {NULL},*ruto[4] = {NULL},*sheik[4] = {NULL},*saria[4] = {NULL},*nayru[4] = {NULL},*oldman[4] = {NULL},*maple[4] = {NULL},*koume[4] = {NULL},*granma[4] = {NULL},*daruina[4] = {NULL},*skull[4] = {NULL}, *guard[16] = {NULL}, *link[21] = {NULL}, *rupees[3] = {NULL}, *zelda[6] = {NULL}, *bombes[10] = {NULL}, *ganon[5] ={NULL},*vide = NULL, *wall = NULL, *linkNow = NULL, *background = NULL, *scoreboard, *texte = NULL, *p_points = NULL, *ganonNow = NULL;
     TTF_Font *police = NULL, *police2 = NULL;
     Mix_Music *gerudo;
     Mix_Chunk *s_ruppes, *s_sword, *s_degat;
@@ -155,7 +154,7 @@ int play (SDL_Surface* screen)
     positionScoreboard.y= 0;
     background = IMG_Load("arene_beta_13.bmp");
     scoreboard = IMG_Load("scoreboard2.bmp");
-    setup_pictures(link, rupees,ganon, zelda, guard, skull,daruina,granma,koume,maple,oldman,nayru,saria,sheik,ruto,rauru, bombes);
+    setup_pictures(link, rupees,ganon, zelda, guard, skull,daruina,granma,koume,maple,oldman,nayru,saria,sheik,ruto,rauru,bombes,box);
     //setup_map(maps);
     linkNow = link[DOWN];
     police = TTF_OpenFont("triforce.ttf", 35);
@@ -170,10 +169,14 @@ int play (SDL_Surface* screen)
     Mix_PlayMusic(gerudo, -1);
     Player *links = (Player*) malloc(sizeof(Player) * NB_PLAYER);
     Item bombe[100];
-
+    Item p_box;
+    p_box.active = false;
+    p_box.x = 0;
+    p_box.y = 0;
     setup_ia(maps, &links);
     ganonNow = ganon[DOWN];
-
+    box=IMG_Load("trash.bmp");
+    SDL_SetColorKey(box, SDL_SRCCOLORKEY, SDL_MapRGB(box->format,0,0,255));
     while (continuer)
     {
         SDL_BlitSurface(background, NULL, screen, &positionBackground);
@@ -213,22 +216,22 @@ int play (SDL_Surface* screen)
                             case HAUT:
                                 linkNow = link[UP];
                                 links[i].orientation = UP;
-                                bonus += movePlayer(maps, &position, UP, s_ruppes);
+                                bonus += movePlayer(maps, &position, UP, s_ruppes, &p_box);
                                 break;
                             case BAS:
                                 linkNow = link[DOWN];
                                 links[i].orientation = DOWN;
-                                bonus += movePlayer(maps, &position, DOWN, s_ruppes);
+                                bonus += movePlayer(maps, &position, DOWN, s_ruppes, &p_box);
                                 break;
                             case DROITE:
                                 linkNow = link[RIGHT];
                                 links[i].orientation = RIGHT;
-                                bonus += movePlayer(maps, &position, RIGHT, s_ruppes);
+                                bonus += movePlayer(maps, &position, RIGHT, s_ruppes, &p_box);
                                 break;
                             case GAUCHE:
                                 linkNow = link[LEFT];
                                 links[i].orientation = LEFT;
-                                bonus += movePlayer(maps, &position, LEFT, s_ruppes);
+                                bonus += movePlayer(maps, &position, LEFT, s_ruppes, &p_box);
                                 break;
                             case EPEE_HAUT:
                                 if (tours > 80)
@@ -368,11 +371,11 @@ int play (SDL_Surface* screen)
         }
         if (tours%150==0)
         {
-            setup_map(maps);
+            setup_map(maps, &p_box);
         }
         timer(temps,score,time,lastTime,stime,mtime,points);
         texte = TTF_RenderText_Blended(police, temps, couleurNoire);
-        blit_items(maps,screen,rupees,bombes);
+        blit_items(maps,screen,rupees,bombes,box,&p_box);
         ganon_move(maps, s_degat , links, &position, tours);
         SDL_BlitSurface(ganonNow, NULL, screen, &position);
         animation(screen, zelda, skull,daruina,granma,koume,maple,oldman,nayru,saria,sheik,ruto,rauru,tours);
@@ -424,14 +427,14 @@ int play (SDL_Surface* screen)
 /*
 Fonction qui initialise la carte avec les rubis et les cases vides.
 */
-void setup_map (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR])
+void setup_map (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], Item *p_box)
 {
     int i,j, nb = 0;
     for (i = MINX + 27; i < MAXX - 27 ; i++)
     {
         for (j = MINY + 13; j < MAXY - 13 ; j++)
         {
-            nb = rand()%325;
+            nb = rand()%250;
             switch (nb)
             {
                 case 5:
@@ -450,9 +453,17 @@ void setup_map (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR])
     {
         for (j = MINY + 13; j < MAXY - 13; j++)
         {
-            if(rand()%850 == 1)
+            if(rand()%700 == 1)
             {
                 maps[i][j] = POT;
+            }
+            else if (p_box->active == false && rand()%100000 == 666)
+            {
+                maps[i][j] = POT;
+                p_box->active = true;
+                p_box->x = i;
+                p_box->y = j;
+
             }
         }
     }
@@ -550,7 +561,7 @@ void timer (char temps[20],char score[6],int time,int lastTime,int stime,int mti
 /*
 Fonction qui permet aux IAs de se déplacer.
 */
-int movePlayer (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *position, int direction, Mix_Chunk *s_ruppes)
+int movePlayer (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *position, int direction, Mix_Chunk *s_ruppes, Item *p_box)
 {
     int i, bonus = 0;
     int *aroundCase[4], *currentCase = NULL;
@@ -641,7 +652,51 @@ int movePlayer (int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], SDL_Rect *position
                 break;
 
         }
-
+                if (p_box->active == true)
+                {
+                    if (position->x == p_box->x && position->y == p_box->y)
+                    {
+                        bonus -= 10000;
+                        p_box->active = false;
+                        p_box->x = 0;
+                        p_box->y = 0;
+                    }
+                    else if(position->x == (p_box->x - 1) && position->y == p_box->y)
+                    {
+                        bonus -= 10000;
+                        p_box->active = false;
+                        p_box->x = 0;
+                        p_box->y = 0;
+                    }
+                    else if(position->x == (p_box->x - 1) && position->y == (p_box->y - 1))
+                    {
+                        bonus -= 10000;
+                        p_box->active = false;
+                        p_box->x = 0;
+                        p_box->y = 0;
+                    }
+                    else if(position->x == p_box->x && position->y == (p_box->y - 1))
+                    {
+                        bonus -= 10000;
+                        p_box->active = false;
+                        p_box->x = 0;
+                        p_box->y = 0;
+                    }
+                    else if(position->x == p_box->x && position->y == (p_box->y + 1))
+                    {
+                        bonus -= 10000;
+                        p_box->active = false;
+                        p_box->x = 0;
+                        p_box->y = 0;
+                    }
+                    else if(position->x == (p_box->x + 1) && position->y == p_box->y)
+                    {
+                        bonus -= 10000;
+                        p_box->active = false;
+                        p_box->x = 0;
+                        p_box->y = 0;
+                    }
+                }
         if ((*currentCase) != IA && (*currentCase) != BOMBE_MAP && (*currentCase) != MUR)
             (*currentCase) = VIDE;
 
@@ -675,7 +730,7 @@ void item(int maps[][NB_BLOCS_HAUTEUR], Player links[], int tours, Item bombes [
                 // Parcour tout le tableau de bombe
                 // a la recherche du struct de la bombe a ces meme coordonée
                 if(bombes[z].x != i || bombes[z].y != j || bombes[z].active == false)
-                { 
+                {
                     continue;
                 }
                 //si la bombe est active alors
@@ -1054,7 +1109,7 @@ void garde(SDL_Surface* screen, SDL_Surface *guard[16], int tours)
 /*
 Fonction qui permet d'afficher les items dans l'arène.
 */
-void blit_items(int maps[][NB_BLOCS_HAUTEUR], SDL_Surface* screen, SDL_Surface* rupees[3], SDL_Surface *bombes[10])
+void blit_items(int maps[][NB_BLOCS_HAUTEUR], SDL_Surface* screen, SDL_Surface* rupees[3], SDL_Surface *bombes[10], SDL_Surface *box, Item *p_box)
 {
     int i, j;
     SDL_Rect position;
@@ -1076,7 +1131,14 @@ void blit_items(int maps[][NB_BLOCS_HAUTEUR], SDL_Surface* screen, SDL_Surface* 
                     SDL_BlitSurface(rupees[RED_RUPEE], NULL, screen, &position);
                     break;
                 case POT:
-                    SDL_BlitSurface(bombes[0], NULL, screen, &position);
+                    if (p_box->active == true && p_box->x == i && p_box->y == j)
+                    {
+                        SDL_BlitSurface(box, NULL, screen, &position);
+                    }
+                    else
+                    {
+                        SDL_BlitSurface(bombes[0], NULL, screen, &position);
+                    }
                     break;
                 case BOMBE_MAP:
                     SDL_BlitSurface(bombes[1], NULL, screen, &position);
@@ -1094,7 +1156,7 @@ void blit_items(int maps[][NB_BLOCS_HAUTEUR], SDL_Surface* screen, SDL_Surface* 
 /*
 Fonction qui permet de charger toutes les images du dossier.
 */
-void setup_pictures (SDL_Surface *link[21],SDL_Surface *rupees[3],SDL_Surface *ganon[5], SDL_Surface *zelda[6], SDL_Surface *guard[16], SDL_Surface *skull[4],SDL_Surface *daruina[4],SDL_Surface *granma[4],SDL_Surface *koume[4],SDL_Surface *maple [4],SDL_Surface *oldman[4],SDL_Surface *nayru[4],SDL_Surface *saria[4],SDL_Surface *sheik[4], SDL_Surface *ruto[4], SDL_Surface *rauru[4],SDL_Surface *bombes[10])
+void setup_pictures (SDL_Surface *link[21],SDL_Surface *rupees[3],SDL_Surface *ganon[5], SDL_Surface *zelda[6], SDL_Surface *guard[16], SDL_Surface *skull[4],SDL_Surface *daruina[4],SDL_Surface *granma[4],SDL_Surface *koume[4],SDL_Surface *maple [4],SDL_Surface *oldman[4],SDL_Surface *nayru[4],SDL_Surface *saria[4],SDL_Surface *sheik[4], SDL_Surface *ruto[4], SDL_Surface *rauru[4],SDL_Surface *bombes[10],SDL_Surface *box)
 {
     link[UP] = IMG_Load("link_up.bmp");
     SDL_SetColorKey(link[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
