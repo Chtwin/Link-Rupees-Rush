@@ -64,22 +64,21 @@ enum {UP, DOWN, LEFT, RIGHT,ANIM_UP1,ANIM_UP2,ANIM_UP3,ANIM_DOWN1,ANIM_DOWN2,ANI
 enum {HAUT, BAS, GAUCHE, DROITE, EPEE_HAUT,EPEE_BAS,EPEE_DROITE,EPEE_GAUCHE, PARER,BOMBE};  /// Différentes actions que peuvent faire les IA's
 enum{GREEN_RUPEE,BLUE_RUPEE,RED_RUPEE,VIDE,MUR,IA,GANON,POT,BOMBE_MAP,BOMBE_DEFLAG};    /// Différents éléments trouvables dans le tableau en argument.
 int play (SDL_Surface* screen);
-int movePlayer (int maps[][NB_BLOCS_HAUTEUR], SDL_Rect *position, int direction, Mix_Chunk *s_ruppes);
+int movePlayer (int maps[][NB_BLOCS_HAUTEUR], SDL_Rect *position, int direction, Mix_Chunk *s_ruppes, Item *p_box);
 void SDL_Delay(Uint32 ms);
 Uint32 SDL_GetTicks(void);
 int Mix_OpenAudio(int frequency, Uint16 format, int channels, int chunksize);
 int Mix_PlayMusic(Mix_Music *music, int loops);
 void ganon_move(int maps[][NB_BLOCS_HAUTEUR], Mix_Chunk *s_degat, Player links[], SDL_Rect *position, int tours);
-void setup_pictures (SDL_Surface *link[21],SDL_Surface *rupees[3],SDL_Surface *ganon[5], SDL_Surface *zelda[6], SDL_Surface *guard[16], SDL_Surface *skull[4],SDL_Surface *daruina[4],SDL_Surface *granma[4],SDL_Surface *koume[4],SDL_Surface *maple [4],SDL_Surface *oldman[4],SDL_Surface *nayru[4],SDL_Surface *saria[4],SDL_Surface *sheik[4], SDL_Surface *ruto[4], SDL_Surface *rauru[4], SDL_Surface *bombes[10]);
-void setup_map (int maps[][NB_BLOCS_HAUTEUR]);
+void setup_pictures (SDL_Surface *link[21],SDL_Surface *rupees[3],SDL_Surface *ganon[5], SDL_Surface *zelda[6], SDL_Surface *guard[16], SDL_Surface *skull[4],SDL_Surface *daruina[4],SDL_Surface *granma[4],SDL_Surface *koume[4],SDL_Surface *maple [4],SDL_Surface *oldman[4],SDL_Surface *nayru[4],SDL_Surface *saria[4],SDL_Surface *sheik[4], SDL_Surface *ruto[4], SDL_Surface *rauru[4], SDL_Surface *bombes[10], SDL_Surface *box);
+void setup_map (int maps[][NB_BLOCS_HAUTEUR], Item *p_box);
 void timer (char temps[],char score[],int time,int lastTime,int stime,int mtime,int points);
 int win (bool survivant, SDL_Surface* screen, Mix_Music *gerudo, Player links[], int continuer, int tours);
 void animation(SDL_Surface* screen, SDL_Surface *zelda[6], SDL_Surface *skull[4],SDL_Surface *daruina[4],SDL_Surface *granma[4],SDL_Surface *koume[4],SDL_Surface *maple [4],SDL_Surface *oldman[4],SDL_Surface *nayru[4],SDL_Surface *saria[4],SDL_Surface *sheik[4], SDL_Surface *ruto[4], SDL_Surface *rauru[4], int tours);
 void garde(SDL_Surface* screen, SDL_Surface *guard[16], int tours);
-int test_ia(int maps[][NB_BLOCS_HAUTEUR]);
 void damage(int maps[][NB_BLOCS_HAUTEUR], Player links[], int playernow);
 int test_ia(int maps[][NB_BLOCS_HAUTEUR], int x, int y, int points, int item);
-void blit_items(int maps[][NB_BLOCS_HAUTEUR], SDL_Surface* screen, SDL_Surface* rupees[3], SDL_Surface *bombes[10]);
+void blit_items(int maps[][NB_BLOCS_HAUTEUR], SDL_Surface* screen, SDL_Surface* rupees[3], SDL_Surface *bombes[10],SDL_Surface *box, Item *p_box);
 void setup_ia(int maps[][NB_BLOCS_HAUTEUR], Player **links);
 bool test_class(int maps[][NB_BLOCS_HAUTEUR], Player links[]);
 void item(int maps[][NB_BLOCS_HAUTEUR], Player links[], int tours, Item bombes [100]);
