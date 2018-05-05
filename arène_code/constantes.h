@@ -12,7 +12,7 @@
 #define MINX    TAILLE_BLOC + 5
 #define MAXY    NB_BLOCS_HAUTEUR - TAILLE_BLOC - 4
 #define MAXX    NB_BLOCS_LARGEUR - TAILLE_BLOC - 8
-#define VOLUME  3 //15
+#define VOLUME  0 //15
 #define BLUE_BONUS  5
 #define RED_BONUS   20
 #define ECART 33
@@ -69,10 +69,11 @@ void SDL_Delay(Uint32 ms);
 Uint32 SDL_GetTicks(void);
 int Mix_OpenAudio(int frequency, Uint16 format, int channels, int chunksize);
 int Mix_PlayMusic(Mix_Music *music, int loops);
+void init_map(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR]);
 void ganon_move(int maps[][NB_BLOCS_HAUTEUR], Mix_Chunk *s_degat, Player links[], SDL_Rect *position, int tours);
-void setup_pictures (SDL_Surface *link[21],SDL_Surface *rupees[3],SDL_Surface *ganon[5], SDL_Surface *zelda[6], SDL_Surface *guard[16], SDL_Surface *skull[4],SDL_Surface *daruina[4],SDL_Surface *granma[4],SDL_Surface *koume[4],SDL_Surface *maple [4],SDL_Surface *oldman[4],SDL_Surface *nayru[4],SDL_Surface *saria[4],SDL_Surface *sheik[4], SDL_Surface *ruto[4], SDL_Surface *rauru[4], SDL_Surface *bombes[10], SDL_Surface *box);
+void setup_medias (SDL_Surface *link[21],SDL_Surface *rupees[3],SDL_Surface *ganon[5], SDL_Surface *zelda[6], SDL_Surface *guard[16], SDL_Surface *skull[4],SDL_Surface *daruina[4],SDL_Surface *granma[4],SDL_Surface *koume[4],SDL_Surface *maple [4],SDL_Surface *oldman[4],SDL_Surface *nayru[4],SDL_Surface *saria[4],SDL_Surface *sheik[4], SDL_Surface *ruto[4], SDL_Surface *rauru[4],SDL_Surface *bombes[10],SDL_Surface **box, SDL_Surface **background, SDL_Surface **scoreboard, TTF_Font **police, TTF_Font **police2,Mix_Chunk **s_ruppes, Mix_Chunk **s_sword, Mix_Chunk **s_degat,Mix_Music **gerudo);
 void setup_map (int maps[][NB_BLOCS_HAUTEUR], Item *p_box);
-void timer (char temps[],char score[],int time,int lastTime,int stime,int mtime,int points);
+void timer (char temps[],char score[],int time,int lastTime,int stime,int mtime,int points,int tours);
 int win (bool survivant, SDL_Surface* screen, Mix_Music *gerudo, Player links[], int continuer, int tours);
 void animation(SDL_Surface* screen, SDL_Surface *zelda[6], SDL_Surface *skull[4],SDL_Surface *daruina[4],SDL_Surface *granma[4],SDL_Surface *koume[4],SDL_Surface *maple [4],SDL_Surface *oldman[4],SDL_Surface *nayru[4],SDL_Surface *saria[4],SDL_Surface *sheik[4], SDL_Surface *ruto[4], SDL_Surface *rauru[4], int tours);
 void garde(SDL_Surface* screen, SDL_Surface *guard[16], int tours);
