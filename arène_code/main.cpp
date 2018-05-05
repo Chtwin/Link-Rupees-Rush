@@ -114,7 +114,7 @@ int play (SDL_Surface* screen)
         fprintf(stderr, "Erreur : pas assez d'ia !\n");
         exit(EXIT_FAILURE);
     }
-    int i = 0, continuer = 1, j = 0, k= 0, time = 0, lastTime = 0, stime = 0, mtime = 0, points = 0, tours = 0, bonus = 0,b = 0;
+    int i = 0, continuer = 1, j = 0, k= 0, points = 0, tours = 0, bonus = 0,b = 0;
     Mix_AllocateChannels(4);
     char temps[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     char score[6] = {0,0,0,0,0,0};
@@ -322,26 +322,21 @@ int play (SDL_Surface* screen)
         position.x = 1025;
         position.y = 30;
         SDL_BlitSurface(p_points, NULL, screen, &position);
-        timer(temps,score,time,lastTime,stime,mtime,points,tours);
+        timer(temps,score,points,tours,screen,police,couleurNoire);
         if (tours%150==0)
         {
             setup_map(maps, &p_box);
         }
-        texte = TTF_RenderText_Blended(police, temps, couleurNoire);
         blit_items(maps,screen,rupees,bombes,box,&p_box);
         ganon_move(maps, s_degat , links, &position, tours);
         SDL_BlitSurface(ganonNow, NULL, screen, &position);
         animation(screen, zelda, skull,daruina,granma,koume,maple,oldman,nayru,saria,sheik,ruto,rauru,tours);
-        position.x = 70;
-        position.y = 25; //30
-        SDL_BlitSurface(texte, NULL, screen, &position);
         garde(screen,guard, tours);
         SDL_Flip(screen);
         continuer = win(test_class(maps, links), screen, gerudo, links, continuer, tours);
     }
     SDL_FreeSurface(box);
     SDL_FreeSurface(wall);
-    SDL_FreeSurface(texte);
     SDL_FreeSurface(p_points);
     SDL_FreeSurface(vide);
     Mix_FreeChunk(s_sword);
@@ -519,8 +514,14 @@ void setup_ia(int maps[][NB_BLOCS_HAUTEUR], Player **links_ptr)
 /*
 Fonction qui permet de gérer le chronométre du jeu.
 */
-void timer (char temps[20],char score[6],int time,int lastTime,int stime,int mtime,int points,int tours)
+void timer (char temps[20],char score[6],int points,int tours, SDL_Surface *screen, TTF_Font *police, SDL_Color couleurNoire)
 {
+    static int lastTime = 0, stime = 0, mtime = 0;
+    int time;
+    SDL_Surface *texte;
+    SDL_Rect position_time;
+    position_time.x = 70;
+    position_time.y = 25;
     time = SDL_GetTicks();
     if (time - lastTime >= 1000)
     {
@@ -540,6 +541,8 @@ void timer (char temps[20],char score[6],int time,int lastTime,int stime,int mti
     {
         sprintf(temps, "Timer : %d : %d",mtime,stime);
     }
+    texte = TTF_RenderText_Blended(police, temps, couleurNoire);
+    SDL_BlitSurface(texte, NULL, screen, &position_time);
 }
 
 
