@@ -63,26 +63,28 @@ struct Item
 enum {UP, DOWN, LEFT, RIGHT,ANIM_UP1,ANIM_UP2,ANIM_UP3,ANIM_DOWN1,ANIM_DOWN2,ANIM_DOWN3,ANIM_LEFT1,ANIM_LEFT2,ANIM_LEFT3,ANIM_RIGHT1,ANIM_RIGHT2,ANIM_RIGHT3, HIT_UP, HIT_DOWN, HIT_LEFT, HIT_RIGHT, SHIELD};
 enum {HAUT, BAS, GAUCHE, DROITE, EPEE_HAUT,EPEE_BAS,EPEE_DROITE,EPEE_GAUCHE, PARER,BOMBE};  /// Différentes actions que peuvent faire les IA's
 enum{GREEN_RUPEE,BLUE_RUPEE,RED_RUPEE,VIDE,MUR,IA,GANON,POT,BOMBE_MAP,BOMBE_DEFLAG};    /// Différents éléments trouvables dans le tableau en argument.
+
 int play (SDL_Surface* screen);
-int movePlayer (int maps[][NB_BLOCS_HAUTEUR], SDL_Rect *position, int direction, Mix_Chunk *s_ruppes, Item *p_box);
-void SDL_Delay(Uint32 ms);
-Uint32 SDL_GetTicks(void);
-int Mix_OpenAudio(int frequency, Uint16 format, int channels, int chunksize);
-int Mix_PlayMusic(Mix_Music *music, int loops);
 void init_map(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR]);
-void ganon_move(int maps[][NB_BLOCS_HAUTEUR], Mix_Chunk *s_degat, Player links[], SDL_Rect *position, int tours);
-void setup_medias (SDL_Surface *link[21],SDL_Surface *rupees[3],SDL_Surface *ganon[5], SDL_Surface *zelda[6], SDL_Surface *guard[16], SDL_Surface *skull[4],SDL_Surface *daruina[4],SDL_Surface *granma[4],SDL_Surface *koume[4],SDL_Surface *maple [4],SDL_Surface *oldman[4],SDL_Surface *nayru[4],SDL_Surface *saria[4],SDL_Surface *sheik[4], SDL_Surface *ruto[4], SDL_Surface *rauru[4],SDL_Surface *bombes[10],SDL_Surface **box, SDL_Surface **background, SDL_Surface **scoreboard, TTF_Font **police, TTF_Font **police2,Mix_Chunk **s_ruppes, Mix_Chunk **s_sword, Mix_Chunk **s_degat,Mix_Music **gerudo);
+void setup_ia(int maps[][NB_BLOCS_HAUTEUR], Player **links);
 void setup_map (int maps[][NB_BLOCS_HAUTEUR], Item *p_box);
-void timer (char temps[],char score[],int time,int lastTime,int stime,int mtime,int points,int tours);
-int win (bool survivant, SDL_Surface* screen, Mix_Music *gerudo, Player links[], int continuer, int tours);
+void setup_medias (SDL_Surface *link[21],SDL_Surface *rupees[3],SDL_Surface *ganon[5], SDL_Surface *zelda[6], SDL_Surface *guard[16], SDL_Surface *skull[4],SDL_Surface *daruina[4],SDL_Surface *granma[4],SDL_Surface *koume[4],SDL_Surface *maple [4],SDL_Surface *oldman[4],SDL_Surface *nayru[4],SDL_Surface *saria[4],SDL_Surface *sheik[4], SDL_Surface *ruto[4], SDL_Surface *rauru[4],SDL_Surface *bombes[10],SDL_Surface **box, SDL_Surface **background, SDL_Surface **scoreboard, TTF_Font **police, TTF_Font **police2,Mix_Chunk **s_ruppes, Mix_Chunk **s_sword, Mix_Chunk **s_degat,Mix_Music **gerudo);
+void timer (char temps[],char score[],int points,int tours, SDL_Surface *screen, TTF_Font *police, SDL_Color couleurNoire);
+int movePlayer (int maps[][NB_BLOCS_HAUTEUR], SDL_Rect *position, int direction, Mix_Chunk *s_ruppes, Item *p_box);
+void ganon_move(int maps[][NB_BLOCS_HAUTEUR], Mix_Chunk *s_degat, Player links[], SDL_Rect *position, int tours);
 void animation(SDL_Surface* screen, SDL_Surface *zelda[6], SDL_Surface *skull[4],SDL_Surface *daruina[4],SDL_Surface *granma[4],SDL_Surface *koume[4],SDL_Surface *maple [4],SDL_Surface *oldman[4],SDL_Surface *nayru[4],SDL_Surface *saria[4],SDL_Surface *sheik[4], SDL_Surface *ruto[4], SDL_Surface *rauru[4], int tours);
 void garde(SDL_Surface* screen, SDL_Surface *guard[16], int tours);
 void damage(int maps[][NB_BLOCS_HAUTEUR], Player links[], int playernow);
 int test_ia(int maps[][NB_BLOCS_HAUTEUR], int x, int y, int points, int item);
-void blit_items(int maps[][NB_BLOCS_HAUTEUR], SDL_Surface* screen, SDL_Surface* rupees[3], SDL_Surface *bombes[10],SDL_Surface *box, Item *p_box);
-void setup_ia(int maps[][NB_BLOCS_HAUTEUR], Player **links);
-bool test_class(int maps[][NB_BLOCS_HAUTEUR], Player links[]);
 void item(int maps[][NB_BLOCS_HAUTEUR], Player links[], int tours, Item bombes [100]);
+void blit_items(int maps[][NB_BLOCS_HAUTEUR], SDL_Surface* screen, SDL_Surface* rupees[3], SDL_Surface *bombes[10],SDL_Surface *box, Item *p_box);
+bool test_class(int maps[][NB_BLOCS_HAUTEUR], Player links[]);
+int win (bool survivant, SDL_Surface* screen, Mix_Music *gerudo, Player links[], int continuer, int tours);
+
+void SDL_Delay(Uint32 ms);
+Uint32 SDL_GetTicks(void);
+int Mix_OpenAudio(int frequency, Uint16 format, int channels, int chunksize);
+int Mix_PlayMusic(Mix_Music *music, int loops);
 
 #ifndef TOURNOIS
 /*
