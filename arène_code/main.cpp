@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
     }
     SDL_WM_SetIcon(SDL_LoadBMP("icone-zelda.bmp"), NULL);
 #ifdef DEBUG
-    screen = SDL_SetVideoMode(1920,HAUTEUR_FENETRE,COULEUR, SDL_HWSURFACE | SDL_DOUBLEBUF);
+    screen = SDL_SetVideoMode(1920,HAUTEUR_FENETRE,COULEUR, SDL_FULLSCREEN | SDL_DOUBLEBUF);
 #else
     screen = SDL_SetVideoMode(1920,HAUTEUR_FENETRE,COULEUR, SDL_FULLSCREEN | SDL_DOUBLEBUF);
 #endif
@@ -108,36 +108,18 @@ Fonction qui lance le jeu:
 int play (SDL_Surface* screen)
 {
     fprintf(stdout, "play()\n");
-
     ia_ptr ias[NB_PLAYER] = IAS;
-
-    if (NB_PLAYER < 2) {
+    if (NB_PLAYER < 2)
+    {
         fprintf(stderr, "Erreur : pas assez d'ia !\n");
         exit(EXIT_FAILURE);
     }
-
-    int i = 0, continuer = 1, j = 0, k= 0, time = 0, lastTime = 0, stime = 0, mtime = 0, points = 0, tours = 0, bonus = 0;
+    int i = 0, continuer = 1, j = 0, k= 0, time = 0, lastTime = 0, stime = 0, mtime = 0, points = 0, tours = 0, bonus = 0,b = 0;
     Mix_AllocateChannels(4);
     char temps[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     char score[6] = {0,0,0,0,0,0};
     int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR], maps_ia[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR];
-    for (i=0;i<NB_BLOCS_LARGEUR;i++)
-    {
-        for (j=0;j<NB_BLOCS_HAUTEUR;j++)
-        {
-            maps[i][j]= VIDE;
-        }
-    }
-    for (i=MINY; i<MAXY; i++)
-    {
-        maps[MINX][i] = MUR;
-        maps[MAXX][i] = MUR;
-    }
-    for (i=MINX; i<MAXX; i++)
-    {
-        maps [i][MINY]=MUR;
-        maps [i][MAXY]=MUR;
-    }
+    init_map(maps);
     for (i=0;i<4;i++)
     {
         Mix_Volume(i,VOLUME);
@@ -152,19 +134,10 @@ int play (SDL_Surface* screen)
     positionBackground.y=0;
     positionScoreboard.x= 1280;
     positionScoreboard.y= 0;
-    background = IMG_Load("arene_beta_13.bmp");
-    scoreboard = IMG_Load("scoreboard2.bmp");
-    setup_pictures(link, rupees,ganon, zelda, guard, skull,daruina,granma,koume,maple,oldman,nayru,saria,sheik,ruto,rauru,bombes,box);
-    //setup_map(maps);
+    setup_medias(link, rupees,ganon, zelda, guard, skull,daruina,granma,koume,maple,oldman,nayru,saria,sheik,ruto,rauru,bombes,&box,&background,&scoreboard,&police,&police2,&s_ruppes,&s_sword,&s_degat,&gerudo);
     linkNow = link[DOWN];
-    police = TTF_OpenFont("triforce.ttf", 35);
-    police2 = TTF_OpenFont("triforce.ttf", 15);
     SDL_Color couleurNoire = {0, 0, 0};
     SDL_Color couleurJaune = {255, 255, 0};
-    s_ruppes = Mix_LoadWAV("get_rupee.wav");
-    s_sword = Mix_LoadWAV("link_sword1.wav");
-    gerudo = Mix_LoadMUS("gerudo_ost.flac");
-    s_degat = Mix_LoadWAV("degat.wav");
     Mix_VolumeMusic(VOLUME);
     Mix_PlayMusic(gerudo, -1);
     Player *links = (Player*) malloc(sizeof(Player) * NB_PLAYER);
@@ -175,12 +148,9 @@ int play (SDL_Surface* screen)
     p_box.y = 0;
     setup_ia(maps, &links);
     ganonNow = ganon[DOWN];
-    box=IMG_Load("trash.bmp");
-    SDL_SetColorKey(box, SDL_SRCCOLORKEY, SDL_MapRGB(box->format,0,0,255));
     while (continuer)
     {
         SDL_BlitSurface(background, NULL, screen, &positionBackground);
-        //SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 17, 206, 112));
         SDL_BlitSurface(scoreboard, NULL, screen, &positionScoreboard);
         tours++;
         for (i=0;i<NB_PLAYER;i++)
@@ -277,13 +247,11 @@ int play (SDL_Surface* screen)
                                 if (tours > 80 && links[i].item > 0)
                                 {
                                     links[i].item--;
-
                                     if(links[i].y != NB_BLOCS_HAUTEUR-1)
                                     {
-                                        int b;
                                         for(b=0; b<100; b++)
                                         {
-                                            if(bombe[b].active == 0)
+                                            if(bombe[b].active == false)
                                             {
                                                 bombe[b].x = links[i].x;
                                                 bombe[b].y = links[i].y + 1;
@@ -315,7 +283,6 @@ int play (SDL_Surface* screen)
                 position.y*= TAILLE_BLOC;
                 maps[links[i].x][links[i].y] = IA;
                 SDL_BlitSurface(linkNow, NULL, screen, &position);
-                ///
                 position.y -= 25 ;
                 position.x += 4;
                 sprintf(score, "J%d",i+1);
@@ -331,7 +298,6 @@ int play (SDL_Surface* screen)
             SDL_Color couleurRouge = {255,0 , 0};
             position.x = (i > 16) ? 1675 : 1425;
             position.y = (i > 16) ? 400 + (i-17)*25 : 400 + i*25;
-
             if (links[i].points < 10)
             {
                 sprintf(score, "X 00%d        X %d \tJ%d",links[i].points,links[i].item, i+1);
@@ -344,9 +310,7 @@ int play (SDL_Surface* screen)
             {
                 sprintf(score, "X %d        X %d \tJ%d",links[i].points,links[i].item,i+1);
             }
-
             p_points = TTF_RenderText_Blended(police2, score, (links[i].classement == -1) ? couleurJaune : couleurRouge);
-
             SDL_BlitSurface(p_points, NULL, screen, &position);
         }
         if(tours > 80)
@@ -358,22 +322,11 @@ int play (SDL_Surface* screen)
         position.x = 1025;
         position.y = 30;
         SDL_BlitSurface(p_points, NULL, screen, &position);
-        time = SDL_GetTicks();
-        if (time - lastTime >= 1000)
-        {
-            stime++;
-            if (stime == 60)
-            {
-                mtime++;
-                stime = 0;
-            }
-            lastTime = time;
-        }
+        timer(temps,score,time,lastTime,stime,mtime,points,tours);
         if (tours%150==0)
         {
             setup_map(maps, &p_box);
         }
-        timer(temps,score,time,lastTime,stime,mtime,points);
         texte = TTF_RenderText_Blended(police, temps, couleurNoire);
         blit_items(maps,screen,rupees,bombes,box,&p_box);
         ganon_move(maps, s_degat , links, &position, tours);
@@ -382,11 +335,11 @@ int play (SDL_Surface* screen)
         position.x = 70;
         position.y = 25; //30
         SDL_BlitSurface(texte, NULL, screen, &position);
-        //SDL_BlitSurface(ganonNow, NULL, screen, &position);
         garde(screen,guard, tours);
         SDL_Flip(screen);
         continuer = win(test_class(maps, links), screen, gerudo, links, continuer, tours);
     }
+    SDL_FreeSurface(box);
     SDL_FreeSurface(wall);
     SDL_FreeSurface(texte);
     SDL_FreeSurface(p_points);
@@ -424,6 +377,27 @@ int play (SDL_Surface* screen)
     return 0;
 }
 
+void init_map(int maps[NB_BLOCS_LARGEUR][NB_BLOCS_HAUTEUR])
+{
+    int i, j;
+    for (i=0;i<NB_BLOCS_LARGEUR;i++)
+    {
+        for (j=0;j<NB_BLOCS_HAUTEUR;j++)
+        {
+            maps[i][j]= VIDE;
+        }
+    }
+    for (i=MINY; i<MAXY; i++)
+    {
+        maps[MINX][i] = MUR;
+        maps[MAXX][i] = MUR;
+    }
+    for (i=MINX; i<MAXX; i++)
+    {
+        maps [i][MINY]=MUR;
+        maps [i][MAXY]=MUR;
+    }
+}
 /*
 Fonction qui initialise la carte avec les rubis et les cases vides.
 */
@@ -545,8 +519,19 @@ void setup_ia(int maps[][NB_BLOCS_HAUTEUR], Player **links_ptr)
 /*
 Fonction qui permet de gérer le chronométre du jeu.
 */
-void timer (char temps[20],char score[6],int time,int lastTime,int stime,int mtime,int points)
+void timer (char temps[20],char score[6],int time,int lastTime,int stime,int mtime,int points,int tours)
 {
+    time = SDL_GetTicks();
+    if (time - lastTime >= 1000)
+    {
+        stime++;
+        if (stime == 60)
+        {
+            mtime++;
+            stime = 0;
+        }
+        lastTime = time;
+    }
     if (stime < 10)
     {
         sprintf(temps, "Timer : %d : 0%d",mtime,stime);
@@ -1156,7 +1141,7 @@ void blit_items(int maps[][NB_BLOCS_HAUTEUR], SDL_Surface* screen, SDL_Surface* 
 /*
 Fonction qui permet de charger toutes les images du dossier.
 */
-void setup_pictures (SDL_Surface *link[21],SDL_Surface *rupees[3],SDL_Surface *ganon[5], SDL_Surface *zelda[6], SDL_Surface *guard[16], SDL_Surface *skull[4],SDL_Surface *daruina[4],SDL_Surface *granma[4],SDL_Surface *koume[4],SDL_Surface *maple [4],SDL_Surface *oldman[4],SDL_Surface *nayru[4],SDL_Surface *saria[4],SDL_Surface *sheik[4], SDL_Surface *ruto[4], SDL_Surface *rauru[4],SDL_Surface *bombes[10],SDL_Surface *box)
+void setup_medias (SDL_Surface *link[21],SDL_Surface *rupees[3],SDL_Surface *ganon[5], SDL_Surface *zelda[6], SDL_Surface *guard[16], SDL_Surface *skull[4],SDL_Surface *daruina[4],SDL_Surface *granma[4],SDL_Surface *koume[4],SDL_Surface *maple [4],SDL_Surface *oldman[4],SDL_Surface *nayru[4],SDL_Surface *saria[4],SDL_Surface *sheik[4], SDL_Surface *ruto[4], SDL_Surface *rauru[4],SDL_Surface *bombes[10],SDL_Surface **box, SDL_Surface **background, SDL_Surface **scoreboard, TTF_Font **police, TTF_Font **police2,Mix_Chunk **s_ruppes, Mix_Chunk **s_sword, Mix_Chunk **s_degat,Mix_Music **gerudo)
 {
     link[UP] = IMG_Load("link_up.bmp");
     SDL_SetColorKey(link[UP], SDL_SRCCOLORKEY, SDL_MapRGB((*link)->format, 0, 0, 255));
@@ -1368,4 +1353,23 @@ void setup_pictures (SDL_Surface *link[21],SDL_Surface *rupees[3],SDL_Surface *g
     SDL_SetColorKey(rauru[LEFT], SDL_SRCCOLORKEY, SDL_MapRGB((*rauru)->format,0,0,255));
     rauru[RIGHT]=IMG_Load("rauru_anim4.bmp");
     SDL_SetColorKey(rauru[RIGHT], SDL_SRCCOLORKEY, SDL_MapRGB((*rauru)->format,0,0,255));
+
+    (*box)=IMG_Load("trash.bmp");
+    SDL_SetColorKey((*box), SDL_SRCCOLORKEY, SDL_MapRGB((*box)->format,0,0,255));
+
+    (*background) = IMG_Load("arene_beta_13.bmp");
+
+    (*scoreboard) = IMG_Load("scoreboard2.bmp");
+
+    (*police) = TTF_OpenFont("triforce.ttf", 35);
+
+    (*police2) = TTF_OpenFont("triforce.ttf", 15);
+
+    (*gerudo) = Mix_LoadMUS("gerudo_ost.flac");
+
+    (*s_ruppes) = Mix_LoadWAV("get_rupee.wav");
+
+    (*s_sword) = Mix_LoadWAV("link_sword1.wav");
+
+    (*s_degat) = Mix_LoadWAV("degat.wav");
 }
