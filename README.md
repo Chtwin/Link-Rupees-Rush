@@ -3,7 +3,7 @@
 ## 21/04:
 
 Correctif de la compilation du logiciel sous windows.
-Correction de la bombe et réorganistion du classement.
+Correction de la bombe et réorganisation du classement.
 
 ## 18/04:
 
